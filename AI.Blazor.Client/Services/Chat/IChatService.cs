@@ -1,6 +1,6 @@
 ﻿namespace AI.Blazor.Client.Services.Chat;
 
-public interface IChatService
+public interface IChatService : IDisposable
 {
     Task<string> GetResponse(
         string userInput,

@@ -1,6 +1,7 @@
 using AI.Blazor.Client.Services.Chat;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace AI.Blazor.Client.Components.Pages;
 
@@ -12,18 +13,22 @@ public partial class Chat : ComponentBase
     [Inject]
     private ILogger<Chat> Logger { get; set; } = default!;
 
-    protected List<ChatMessage> Messages { get; set; } = new();
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    protected List<ChatMessageViewModel> Messages { get; set; } = new();
     protected string CurrentMessage { get; set; } = string.Empty;
     protected bool IsTyping { get; set; } = false;
     protected bool IsStreaming { get; set; } = false;
     protected bool IsStreamingEnabled { get; set; } = true;
+    protected bool IsProcessing => this.IsTyping || this.IsStreaming;
     protected ElementReference MessageContainer { get; set; }
     protected string? ErrorMessage { get; set; }
 
     protected override void OnInitialized()
     {
         var welcomeMessage = "Hello! I'm your AI assistant. How can I help you today?";
-        this.Messages.Add(new ChatMessage
+        this.Messages.Add(new ChatMessageViewModel
         {
             Text = welcomeMessage,
             IsUser = false,
@@ -37,7 +42,7 @@ public partial class Chat : ComponentBase
             return;
 
         var userMessage = this.CurrentMessage.Trim();
-        this.Messages.Add(new ChatMessage
+        this.Messages.Add(new ChatMessageViewModel
         {
             Text = userMessage,
             IsUser = true,
@@ -49,11 +54,11 @@ public partial class Chat : ComponentBase
 
         if (this.IsStreamingEnabled)
         {
-            await SendStreamingMessage(userMessage);
+            await this.SendStreamingMessage(userMessage);
         }
         else
         {
-            await SendNonStreamingMessage(userMessage);
+            await this.SendNonStreamingMessage(userMessage);
         }
     }
 
@@ -65,7 +70,7 @@ public partial class Chat : ComponentBase
         {
             var response = await this.ChatService.GetResponse(userMessage);
 
-            this.Messages.Add(new ChatMessage
+            this.Messages.Add(new ChatMessageViewModel
             {
                 Text = response,
                 IsUser = false,
@@ -77,7 +82,7 @@ public partial class Chat : ComponentBase
             this.Logger.LogError(ex, "Error getting chat response");
             this.ErrorMessage = "Sorry, I encountered an error. Please try again.";
             
-            this.Messages.Add(new ChatMessage
+            this.Messages.Add(new ChatMessageViewModel
             {
                 Text = this.ErrorMessage,
                 IsUser = false,
@@ -87,7 +92,8 @@ public partial class Chat : ComponentBase
         finally
         {
             this.IsTyping = false;
-            await InvokeAsync(StateHasChanged);
+            await this.InvokeAsync(this.StateHasChanged);
+            await this.ScrollToBottom();
         }
     }
 
@@ -95,7 +101,7 @@ public partial class Chat : ComponentBase
     {
         this.IsStreaming = true;
 
-        var aiMessage = new ChatMessage
+        var aiMessage = new ChatMessageViewModel
         {
             Text = string.Empty,
             IsUser = false,
@@ -103,40 +109,57 @@ public partial class Chat : ComponentBase
         };
 
         this.Messages.Add(aiMessage);
-        await InvokeAsync(StateHasChanged);
+        await this.InvokeAsync(this.StateHasChanged);
+        await this.ScrollToBottom();
 
         try
         {
+            var lastUpdate = DateTime.UtcNow;
+            const int throttleMs = 100; // Update UI every 50ms maximum
+
             await foreach (var chunk in this.ChatService.GetStreamingResponse(userMessage))
             {
                 aiMessage.Text += chunk;
-                await InvokeAsync(StateHasChanged);
+
+                var elapsed = (DateTime.UtcNow - lastUpdate).TotalMilliseconds;
+                if (elapsed >= throttleMs)
+                {
+                    await this.InvokeAsync(this.StateHasChanged);
+                    await this.ScrollToBottom();
+                    lastUpdate = DateTime.UtcNow;
+                }
             }
+
+            // Final update to ensure all chunks are displayed
+            await this.InvokeAsync(this.StateHasChanged);
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Error getting streaming chat response");
             this.ErrorMessage = "Sorry, I encountered an error. Please try again.";
-            
+
             aiMessage.Text = this.ErrorMessage;
         }
         finally
         {
             this.IsStreaming = false;
-            await InvokeAsync(StateHasChanged);
+            await this.InvokeAsync(this.StateHasChanged);
         }
-    }
-
-    protected async Task HandleKeyPress(KeyboardEventArgs e)
+    }    protected async Task HandleKeyPress(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(this.CurrentMessage))
         {
             await this.SendMessage();
         }
     }
+
+    private async Task ScrollToBottom()
+    {
+        await this.JSRuntime.InvokeVoidAsync("scrollToBottom", this.MessageContainer);
+    }
 }
 
-public class ChatMessage
+public class ChatMessageViewModel
 {
     public string Text { get; set; } = string.Empty;
     public bool IsUser { get; set; }
