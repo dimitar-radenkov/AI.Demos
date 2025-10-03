@@ -2,6 +2,7 @@ using AI.Shared.Settings;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
 using AI.Blazor.Client.Services.Markdown;
+using AI.Blazor.Client.Services.Welcome;
 using Microsoft.SemanticKernel;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddRazorComponents()
 // Configure settings
 var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<LlmSettings>();
 builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSettings.SectionName));
+builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection("WelcomeSettings"));
 
 // Register Semantic Kernel services
 builder.Services.AddOpenAIChatCompletion(
@@ -23,6 +25,7 @@ builder.Services.AddTransient<Kernel>();
 
 // Register application services
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IWelcomeService, WelcomeService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdigService>();
 
 var app = builder.Build();
