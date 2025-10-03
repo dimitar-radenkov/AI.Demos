@@ -1,0 +1,49 @@
+@page "/"
+@page "/chat"
+@rendermode InteractiveServer
+
+<PageTitle>Chat</PageTitle>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <h3>AI Assistant</h3>
+        <p class="chat-status">Online</p>
+    </div>
+
+    <div class="chat-messages" @ref="MessageContainer">
+        @foreach (var message in Messages)
+        {
+            <div class="message @(message.IsUser ? "message-user" : "message-ai")">
+                <div class="message-bubble">
+                    <p>@message.Text</p>
+                    <span class="message-time">@message.Timestamp.ToString("HH:mm")</span>
+                </div>
+            </div>
+        }
+        @if (IsTyping)
+        {
+            <div class="message message-ai">
+                <div class="message-bubble typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="chat-input-container">
+        <input type="text" 
+               class="chat-input" 
+               placeholder="Type your message..." 
+               @bind="CurrentMessage" 
+               @bind:event="oninput"
+               @onkeydown="HandleKeyPress" />
+        <button class="chat-send-button" @onclick="SendMessage" disabled="@string.IsNullOrWhiteSpace(CurrentMessage)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>
