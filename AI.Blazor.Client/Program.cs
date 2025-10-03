@@ -1,5 +1,5 @@
 using AI.Shared.Settings;
-using Blazor_AI.Components;
+using AI.Blazor.Client.Components;
 using Microsoft.SemanticKernel;
 
 var builder = WebApplication.CreateBuilder(args);

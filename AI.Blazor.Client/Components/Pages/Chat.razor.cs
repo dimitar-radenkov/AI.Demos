@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace Blazor_AI.Components.Pages;
+namespace AI.Blazor.Client.Components.Pages;
 
 public partial class Chat : ComponentBase
 {

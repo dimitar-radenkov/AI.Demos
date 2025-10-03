@@ -5,6 +5,7 @@
 /.vs
 /AI.Shared/bin/Debug/net9.0
 /AI.Shared/obj
-/AI_Simple/bin/Debug/net9.0
-/AI_Simple/obj
-/Blazor_AI/obj
+/AI.Console.Client/bin/Debug/net9.0
+/AI.Console.Client/obj
+/AI.Blazor.Client/obj
+/AI.Blazor.Client/bin/Debug/net9.0
