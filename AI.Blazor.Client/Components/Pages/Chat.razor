@@ -15,7 +15,7 @@
         {
             <div class="message @(message.IsUser ? "message-user" : "message-ai")">
                 <div class="message-bubble">
-                    <p>@message.Text</p>
+                    <MarkdownView Content="@message.Text" />
                     <span class="message-time">@message.Timestamp.ToString("HH:mm")</span>
                 </div>
             </div>

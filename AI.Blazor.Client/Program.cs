@@ -1,6 +1,7 @@
 using AI.Shared.Settings;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
+using AI.Blazor.Client.Services.Markdown;
 using Microsoft.SemanticKernel;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,8 +21,9 @@ builder.Services.AddOpenAIChatCompletion(
 
 builder.Services.AddTransient<Kernel>();
 
-// Register chat service
+// Register application services
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddSingleton<IMarkdownService, MarkdigService>();
 
 var app = builder.Build();
 
