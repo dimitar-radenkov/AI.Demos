@@ -2,10 +2,9 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs
-/AI.Shared/bin/Debug/net9.0
-/AI.Shared/obj
-/AI.Console.Client/bin/Debug/net9.0
-/AI.Console.Client/obj
-/AI.Blazor.Client/obj
-/AI.Blazor.Client/bin/Debug/net9.0
+# Visual Studio
+.vs/
+
+# Build results
+[Bb]in/
+[Oo]bj/
