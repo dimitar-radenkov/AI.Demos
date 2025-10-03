@@ -49,6 +49,9 @@ public partial class Chat : ComponentBase
             Timestamp = DateTime.Now
         });
 
+        await this.InvokeAsync(this.StateHasChanged);
+        await this.ScrollToBottom();
+
         this.CurrentMessage = string.Empty;
         this.ErrorMessage = null;
 
