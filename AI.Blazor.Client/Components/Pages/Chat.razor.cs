@@ -15,6 +15,8 @@ public partial class Chat : ComponentBase
     protected List<ChatMessage> Messages { get; set; } = new();
     protected string CurrentMessage { get; set; } = string.Empty;
     protected bool IsTyping { get; set; } = false;
+    protected bool IsStreaming { get; set; } = false;
+    protected bool IsStreamingEnabled { get; set; } = true;
     protected ElementReference MessageContainer { get; set; }
     protected string? ErrorMessage { get; set; }
 
@@ -43,8 +45,21 @@ public partial class Chat : ComponentBase
         });
 
         this.CurrentMessage = string.Empty;
-        this.IsTyping = true;
         this.ErrorMessage = null;
+
+        if (this.IsStreamingEnabled)
+        {
+            await SendStreamingMessage(userMessage);
+        }
+        else
+        {
+            await SendNonStreamingMessage(userMessage);
+        }
+    }
+
+    private async Task SendNonStreamingMessage(string userMessage)
+    {
+        this.IsTyping = true;
 
         try
         {
@@ -72,6 +87,42 @@ public partial class Chat : ComponentBase
         finally
         {
             this.IsTyping = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SendStreamingMessage(string userMessage)
+    {
+        this.IsStreaming = true;
+
+        var aiMessage = new ChatMessage
+        {
+            Text = string.Empty,
+            IsUser = false,
+            Timestamp = DateTime.Now
+        };
+
+        this.Messages.Add(aiMessage);
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            await foreach (var chunk in this.ChatService.GetStreamingResponse(userMessage))
+            {
+                aiMessage.Text += chunk;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error getting streaming chat response");
+            this.ErrorMessage = "Sorry, I encountered an error. Please try again.";
+            
+            aiMessage.Text = this.ErrorMessage;
+        }
+        finally
+        {
+            this.IsStreaming = false;
             await InvokeAsync(StateHasChanged);
         }
     }

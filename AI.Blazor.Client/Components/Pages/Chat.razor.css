@@ -13,10 +13,22 @@
 
 /* Chat Header */
 .chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 1.5rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-header-left {
+    flex: 1;
+}
+
+.chat-header-right {
+    display: flex;
+    align-items: center;
 }
 
 .chat-header h3 {
@@ -29,6 +41,53 @@
     margin: 0.25rem 0 0 0;
     font-size: 0.8125rem;
     opacity: 0.9;
+}
+
+/* Streaming Toggle */
+.streaming-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.streaming-toggle input[type="checkbox"] {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+    outline: none;
+}
+
+.streaming-toggle input[type="checkbox"]:checked {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.streaming-toggle input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.streaming-toggle input[type="checkbox"]:checked::before {
+    transform: translateX(20px);
+}
+
+.toggle-label {
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 /* Chat Messages */
@@ -129,6 +188,24 @@
     }
     30% {
         transform: translateY(-10px);
+    }
+}
+
+/* Streaming Cursor */
+.streaming-cursor {
+    display: inline-block;
+    color: #667eea;
+    font-size: 1.25rem;
+    animation: cursorBlink 1s infinite;
+    margin-left: 0.25rem;
+}
+
+@keyframes cursorBlink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0;
     }
 }
 

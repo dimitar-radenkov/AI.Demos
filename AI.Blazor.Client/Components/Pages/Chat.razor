@@ -6,8 +6,17 @@
 
 <div class="chat-container">
     <div class="chat-header">
-        <h3>AI Assistant</h3>
-        <p class="chat-status">Online</p>
+        <div class="chat-header-left">
+            <h3>AI Assistant</h3>
+            <p class="chat-status">Online</p>
+        </div>
+        <div class="chat-header-right">
+            <label class="streaming-toggle">
+                <input type="checkbox" @bind="IsStreamingEnabled" />
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">⚡ Streaming</span>
+            </label>
+        </div>
     </div>
 
     <div class="chat-messages" @ref="MessageContainer">
@@ -20,7 +29,7 @@
                 </div>
             </div>
         }
-        @if (IsTyping)
+        @if (IsTyping && !IsStreamingEnabled)
         {
             <div class="message message-ai">
                 <div class="message-bubble typing-indicator">
@@ -29,6 +38,10 @@
                     <span></span>
                 </div>
             </div>
+        }
+        @if (IsStreaming)
+        {
+            <div class="streaming-cursor">▊</div>
         }
     </div>
 

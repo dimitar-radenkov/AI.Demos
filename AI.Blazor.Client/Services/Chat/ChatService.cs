@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace AI.Blazor.Client.Services.Chat;
@@ -40,5 +41,33 @@ public sealed class ChatService : IChatService
         this.chatHistory.AddAssistantMessage(response.Content!);
 
         return response.Content!;
+    }
+
+    public async IAsyncEnumerable<string> GetStreamingResponse(
+        string userInput,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var reducedHistory = await this.chatReducer.ReduceAsync(this.chatHistory, cancellationToken);
+        if (reducedHistory is not null)
+        {
+            this.chatHistory = [.. reducedHistory];
+        }
+
+        this.chatHistory.AddUserMessage(userInput);
+
+        var fullResponse = new System.Text.StringBuilder();
+
+        await foreach (var chunk in this.chatCompletionService.GetStreamingChatMessageContentsAsync(
+            this.chatHistory,
+            cancellationToken: cancellationToken))
+        {
+            if (!string.IsNullOrEmpty(chunk.Content))
+            {
+                fullResponse.Append(chunk.Content);
+                yield return chunk.Content;
+            }
+        }
+
+        this.chatHistory.AddAssistantMessage(fullResponse.ToString());
     }
 }
