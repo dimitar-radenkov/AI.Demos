@@ -1,4 +1,5 @@
 using AI.Blazor.Client.Services.Chat;
+using AI.Blazor.Client.Services.Welcome;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -9,6 +10,9 @@ public partial class Chat : ComponentBase
 {
     [Inject]
     private IChatService ChatService { get; set; } = default!;
+
+    [Inject]
+    private IWelcomeService WelcomeService { get; set; } = default!;
 
     [Inject]
     private ILogger<Chat> Logger { get; set; } = default!;
@@ -25,9 +29,15 @@ public partial class Chat : ComponentBase
     protected ElementReference MessageContainer { get; set; }
     protected string? ErrorMessage { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var welcomeMessage = "Hello! I'm your AI assistant. How can I help you today?";
+        await this.LoadWelcomeMessage();
+    }
+
+    private async Task LoadWelcomeMessage()
+    {       
+        var welcomeMessage = await this.WelcomeService.GenerateWelcomeMessage();
+
         this.Messages.Add(new ChatMessageViewModel
         {
             Text = welcomeMessage,
