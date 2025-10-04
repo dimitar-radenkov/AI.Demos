@@ -36,7 +36,7 @@ public partial class Chat : ComponentBase
 
     private async Task LoadWelcomeMessage()
     {       
-        var welcomeMessage = await this.WelcomeService.GenerateWelcomeMessageAsync();
+        var welcomeMessage = await this.WelcomeService.GenerateWelcomeMessage();
 
         this.Messages.Add(new ChatMessageViewModel
         {

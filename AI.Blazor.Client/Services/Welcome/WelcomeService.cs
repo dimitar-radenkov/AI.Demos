@@ -19,10 +19,9 @@ public sealed class WelcomeService : IWelcomeService
         this.logger = logger;
     }
 
-    public async Task<string> GenerateWelcomeMessageAsync(
+    public async Task<string> GenerateWelcomeMessage(
         CancellationToken cancellationToken = default)
     {
-        // Simple prompt template with TWO arguments
         const string promptTemplate = """
             Generate a personalized, friendly welcome message.
 
@@ -57,12 +56,15 @@ public sealed class WelcomeService : IWelcomeService
                 cancellationToken);
 
             return result.GetValue<string>()
-                ?? $"Hello {this.settings.UserName}! How can I help you today?";
+                ?? GenerateFallbackMessage(settings.UserName);
         }
         catch (Exception ex)
         {
             this.logger.LogError(ex, "Error generating welcome message");
-            return $"Hello {this.settings.UserName}! How can I help you today?";
+            return GenerateFallbackMessage(settings.UserName);
         }
     }
+
+    private static string GenerateFallbackMessage(string userName) =>
+        $"Hello {userName}! How can I help you today?";
 }
