@@ -62,7 +62,7 @@ public sealed class WelcomeService : IWelcomeService
         catch (Exception ex)
         {
             this.logger.LogError(ex, "Error generating welcome message");
-            return GenerateFallbackMessage(settings.UserName);
+            return GenerateFallbackMessage(this.settings.UserName);
         }
     }
 
