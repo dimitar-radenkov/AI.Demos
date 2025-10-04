@@ -16,17 +16,17 @@ var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<L
 builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSettings.SectionName));
 builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(WelcomeSettings.SectionName));
 
-//Register Plugins
+// Register Plugins
 builder.Services.AddSingleton<TimePlugin>();
 
-//creates TRANSIENT kernel instance for each request
-var kernelBuidler = builder.Services.AddKernel();
-kernelBuidler.AddOpenAIChatCompletion(
+// Creates TRANSIENT kernel instance for each request
+var kernelBuilder = builder.Services.AddKernel();
+kernelBuilder.AddOpenAIChatCompletion(
     modelId: llmOptions!.Model,
     apiKey: llmOptions.ApiKey,
     endpoint: new Uri($"{llmOptions.BaseUrl}/v1"));
 
-kernelBuidler.Plugins.AddFromType<TimePlugin>();
+kernelBuilder.Plugins.AddFromType<TimePlugin>();
 
 // Register application services
 builder.Services.AddSingleton(TimeProvider.System);
