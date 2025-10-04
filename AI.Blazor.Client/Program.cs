@@ -13,7 +13,7 @@ builder.Services.AddRazorComponents()
 // Configure settings
 var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<LlmSettings>();
 builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSettings.SectionName));
-builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection("WelcomeSettings"));
+builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(WelcomeSettings.SectionName));
 
 // Register Semantic Kernel services
 builder.Services.AddOpenAIChatCompletion(
