@@ -57,7 +57,7 @@ public sealed class WelcomeService : IWelcomeService
                 cancellationToken);
 
             return result.GetValue<string>()
-                ?? GenerateFallbackMessage(settings.UserName);
+                ?? GenerateFallbackMessage(this.settings.UserName);
         }
         catch (Exception ex)
         {
