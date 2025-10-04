@@ -43,7 +43,6 @@ public sealed class WelcomeService : IWelcomeService
     public async Task<string> GenerateWelcomeMessage(
         CancellationToken cancellationToken = default)
     {
-
         var arguments = new KernelArguments
         {
             ["userName"] = this.settings.UserName,
