@@ -4,6 +4,7 @@ using AI.Blazor.Client.Services.Chat;
 using AI.Blazor.Client.Services.Markdown;
 using AI.Blazor.Client.Services.Welcome;
 using Microsoft.SemanticKernel;
+using AI.Shared.Plugins;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,13 +16,17 @@ var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<L
 builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSettings.SectionName));
 builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(WelcomeSettings.SectionName));
 
-// Register Semantic Kernel services
-builder.Services.AddOpenAIChatCompletion(
+// Register Plugins
+builder.Services.AddSingleton<TimePlugin>();
+
+// Creates TRANSIENT kernel instance for each request
+var kernelBuilder = builder.Services.AddKernel();
+kernelBuilder.AddOpenAIChatCompletion(
     modelId: llmOptions!.Model,
     apiKey: llmOptions.ApiKey,
     endpoint: new Uri($"{llmOptions.BaseUrl}/v1"));
 
-builder.Services.AddTransient<Kernel>();
+kernelBuilder.Plugins.AddFromType<TimePlugin>();
 
 // Register application services
 builder.Services.AddSingleton(TimeProvider.System);
