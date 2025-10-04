@@ -24,6 +24,7 @@ builder.Services.AddOpenAIChatCompletion(
 builder.Services.AddTransient<Kernel>();
 
 // Register application services
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IWelcomeService, WelcomeService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdigService>();

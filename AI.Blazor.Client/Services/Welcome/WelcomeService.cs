@@ -5,24 +5,8 @@ namespace AI.Blazor.Client.Services.Welcome;
 
 public sealed class WelcomeService : IWelcomeService
 {
-    private readonly Kernel kernel;
-    private readonly WelcomeSettings settings;
-    private readonly ILogger<WelcomeService> logger;
-
-    public WelcomeService(
-        Kernel kernel,
-        IOptions<WelcomeSettings> options,
-        ILogger<WelcomeService> logger)
-    {
-        this.kernel = kernel;
-        this.settings = options.Value;
-        this.logger = logger;
-    }
-
-    public async Task<string> GenerateWelcomeMessage(
-        CancellationToken cancellationToken = default)
-    {
-        const string promptTemplate = """
+    private static readonly KernelFunction WelcomeFunction = KernelFunctionFactory.CreateFromPrompt(
+        promptTemplate: """
             Generate a personalized, friendly welcome message.
 
             User's name: {{$userName}}
@@ -35,23 +19,41 @@ public sealed class WelcomeService : IWelcomeService
             - End with an offer to help
 
             Output only the welcome message.
-            """;
+            """,
+        functionName: "GenerateWelcome",
+        description: "Generates personalized welcome messages");
 
-        var function = KernelFunctionFactory.CreateFromPrompt(
-            promptTemplate,
-            functionName: "GenerateWelcome",
-            description: "Generates personalized welcome messages");
+    private readonly Kernel kernel;
+    private readonly WelcomeSettings settings;
+    private readonly TimeProvider timeProvider;
+    private readonly ILogger<WelcomeService> logger;
+
+    public WelcomeService(
+        Kernel kernel,
+        IOptions<WelcomeSettings> options,
+        TimeProvider timeProvider,
+        ILogger<WelcomeService> logger)
+    {
+        this.kernel = kernel;
+        this.settings = options.Value;
+        this.timeProvider = timeProvider;
+        this.logger = logger;
+    }
+
+    public async Task<string> GenerateWelcomeMessage(
+        CancellationToken cancellationToken = default)
+    {
 
         var arguments = new KernelArguments
         {
             ["userName"] = this.settings.UserName,
-            ["currentDateTime"] = DateTime.Now.ToString("F") // Full date/time format
+            ["currentDateTime"] = this.timeProvider.GetLocalNow().ToString("F") // Full date/time format
         };
 
         try
         {
             var result = await this.kernel.InvokeAsync(
-                function,
+                WelcomeFunction,
                 arguments,
                 cancellationToken);
 
