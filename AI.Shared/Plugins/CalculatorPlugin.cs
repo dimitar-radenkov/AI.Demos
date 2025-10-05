@@ -21,7 +21,7 @@ public sealed class CalculatorPlugin
     [Description("Divides the first number by the second.")]
     public static decimal Divide(decimal a, decimal b)
     {
-        if (b == 0)
+        if (b == decimal.Zero)
         {
             throw new DivideByZeroException("The divisor cannot be zero.");
         }
