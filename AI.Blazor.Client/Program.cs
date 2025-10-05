@@ -28,6 +28,7 @@ kernelBuilder.AddOpenAIChatCompletion(
 kernelBuilder.Plugins.AddFromType<AI.Shared.Plugins.TimePlugin>();
 kernelBuilder.Plugins.AddFromType<FileManagementPlugin>();
 kernelBuilder.Plugins.AddFromType<FileIOPlugin>();
+kernelBuilder.Plugins.AddFromType<CalculatorPlugin>();
 
 // Register application services
 builder.Services.AddSingleton(TimeProvider.System);
