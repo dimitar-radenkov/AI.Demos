@@ -18,20 +18,6 @@ builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSe
 builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(WelcomeSettings.SectionName));
 builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(FileIOSettings.SectionName));
 
-// Register Plugins
-builder.Services.AddSingleton<AI.Shared.Plugins.TimePlugin>();
-
-// Configure allowed folders list
-var fileIOSettings = builder.Configuration.GetSection(FileIOSettings.SectionName).Get<FileIOSettings>();
-builder.Services.AddSingleton<FileIOPlugin>(sp =>
-{
-    return new FileIOPlugin
-    {
-        AllowedFolders = fileIOSettings!.AllowedFolders,
-        DisableFileOverwrite = fileIOSettings.DisableFileOverwrite
-    };
-});
-
 // Creates TRANSIENT kernel instance for each request
 var kernelBuilder = builder.Services.AddKernel();
 kernelBuilder.AddOpenAIChatCompletion(
