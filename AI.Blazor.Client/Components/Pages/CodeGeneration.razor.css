@@ -1,0 +1,136 @@
+/* Code Generation Page Styles */
+.code-gen-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.code-gen-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.code-gen-header h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.code-gen-header p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.code-gen-input {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.code-input {
+    width: 100%;
+    min-height: 120px;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.code-input:focus {
+    border-color: #667eea;
+}
+
+.generate-btn {
+    align-self: flex-start;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.generate-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.generate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.code-gen-output {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.code-gen-output h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.code-gen-output pre {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0;
+}
+
+.code-gen-output code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.copy-btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.copy-btn:hover {
+    background: #218838;
+}
+
+.error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #f5c6cb;
+    margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .code-gen-container {
+        padding: 1rem;
+    }
+
+    .code-gen-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .code-input {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+}

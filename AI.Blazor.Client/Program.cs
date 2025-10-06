@@ -1,5 +1,6 @@
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
+using AI.Blazor.Client.Services.CodeGeneration;
 using AI.Blazor.Client.Services.Markdown;
 using AI.Blazor.Client.Services.Welcome;
 using AI.Shared.Plugins;
@@ -17,6 +18,7 @@ var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<L
 builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSettings.SectionName));
 builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(WelcomeSettings.SectionName));
 builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(FileIOSettings.SectionName));
+builder.Services.Configure<CodeGenerationSettings>(builder.Configuration.GetSection(CodeGenerationSettings.SectionName));
 
 // Creates TRANSIENT kernel instance for each request
 var kernelBuilder = builder.Services.AddKernel();
@@ -34,6 +36,7 @@ kernelBuilder.Plugins.AddFromType<CalculatorPlugin>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IWelcomeService, WelcomeService>();
+builder.Services.AddScoped<ICodeGenerationService, CodeGenerationService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdigService>();
 
 var app = builder.Build();
