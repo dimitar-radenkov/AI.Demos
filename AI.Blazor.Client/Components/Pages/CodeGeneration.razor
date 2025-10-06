@@ -1,7 +1,7 @@
 @page "/code-generation"
 @rendermode InteractiveServer
 
-@using AI.Blazor.Client.Services.CodeGeneration
+@using AI.Blazor.Client.Agents.CodeGeneration
 
 <PageTitle>Code Generation</PageTitle>
 
@@ -46,7 +46,7 @@
 
 @code {
     [Inject]
-    private ICodeGenerationService CodeGenerationService { get; set; } = default!;
+    private ICodeGenerationAgent CodeGenerationAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<CodeGeneration> Logger { get; set; } = default!;
@@ -70,7 +70,7 @@
 
         try
         {
-            GeneratedCode = await CodeGenerationService.GenerateCode(UserRequest.Trim());
+            GeneratedCode = await CodeGenerationAgent.GenerateCodeAsync(UserRequest.Trim());
         }
         catch (Exception ex)
         {
