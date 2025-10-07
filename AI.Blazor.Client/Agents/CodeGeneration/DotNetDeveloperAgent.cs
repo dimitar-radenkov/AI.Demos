@@ -7,12 +7,12 @@ using System.Text.RegularExpressions;
 
 namespace AI.Blazor.Client.Agents.CodeGeneration;
 
-public sealed class DotNetDeveloper : IDotNetDeveloper
+public sealed class DotNetDeveloperAgent : IDotNetDeveloperAgent
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
 
-    public DotNetDeveloper(IOptions<AgentsSettings> agentsSettings)
+    public DotNetDeveloperAgent(IOptions<AgentsSettings> agentsSettings)
     {
         var settings = agentsSettings.Value.DotNetDeveloper;
 

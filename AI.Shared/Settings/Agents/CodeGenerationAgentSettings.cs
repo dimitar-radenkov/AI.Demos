@@ -6,7 +6,6 @@ public sealed class CodeGenerationAgentSettings
     public required string[] SystemPrompt { get; init; }
     public required string ApiKey { get; init; }
     public required string BaseUrl { get; init; }
-    public required int MaxHistoryMessages { get; init; }
 
     public string GetSystemPrompt() => string.Join("\n", SystemPrompt);
 }
