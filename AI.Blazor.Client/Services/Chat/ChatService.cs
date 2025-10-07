@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using AI.Shared.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -39,11 +40,7 @@ public sealed class ChatService : IChatService, IDisposable
         await this.semaphore.WaitAsync(cancellationToken);
         try
         {
-            var reducedHistory = await this.chatReducer.ReduceAsync(this.chatHistory, cancellationToken);
-            if (reducedHistory is not null)
-            {
-                this.chatHistory = [.. reducedHistory];
-            }
+            this.chatHistory = await this.chatHistory.ReduceIfNeededAsync(this.chatReducer, cancellationToken);
 
             this.chatHistory.AddUserMessage(userInput);
 
@@ -70,11 +67,7 @@ public sealed class ChatService : IChatService, IDisposable
         await this.semaphore.WaitAsync(cancellationToken);
         try
         {
-            var reducedHistory = await this.chatReducer.ReduceAsync(this.chatHistory, cancellationToken);
-            if (reducedHistory is not null)
-            {
-                this.chatHistory = [.. reducedHistory];
-            }
+            this.chatHistory = await this.chatHistory.ReduceIfNeededAsync(this.chatReducer, cancellationToken);
 
             this.chatHistory.AddUserMessage(userInput);
 

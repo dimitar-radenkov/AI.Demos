@@ -1,0 +1,93 @@
+@page "/code-generation"
+@rendermode InteractiveServer
+
+@using AI.Blazor.Client.Agents.CodeGeneration
+
+<PageTitle>C# Code Generation</PageTitle>
+
+<div class="code-gen-container">
+    <div class="code-gen-header">
+        <h3>C# Code Generator</h3>
+        <p>Generate C# code using AI. Try: "create a static class that adds 2 numbers"</p>
+    </div>
+
+    <div class="code-gen-input">
+        <textarea class="code-input" 
+                  @bind="UserRequest" 
+                  placeholder="Describe the code you want to generate..."></textarea>
+        <button class="generate-btn" @onclick="GenerateCode" disabled="@IsGenerating">
+            @if (IsGenerating)
+            {
+                <span>Generating...</span>
+            }
+            else
+            {
+                <span>Generate Code</span>
+            }
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(GeneratedCode))
+    {
+        <div class="code-gen-output">
+            <h4>Generated Code:</h4>
+            <pre><code class="csharp">@GeneratedCode</code></pre>
+            <button class="copy-btn" @onclick="CopyToClipboard">Copy Code</button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="error-message">
+            <strong>Error:</strong> @ErrorMessage
+        </div>
+    }
+</div>
+
+@code {
+    [Inject]
+    private IDotNetDeveloperAgent CodeGenerationAgent { get; set; } = default!;
+
+    [Inject]
+    private ILogger<CodeGeneration> Logger { get; set; } = default!;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    protected string UserRequest { get; set; } = string.Empty;
+    protected string GeneratedCode { get; set; } = string.Empty;
+    protected string ErrorMessage { get; set; } = string.Empty;
+    protected bool IsGenerating { get; set; } = false;
+
+    private async Task GenerateCode()
+    {
+        if (string.IsNullOrWhiteSpace(UserRequest))
+            return;
+
+        IsGenerating = true;
+        ErrorMessage = string.Empty;
+        GeneratedCode = string.Empty;
+
+        try
+        {
+            GeneratedCode = await CodeGenerationAgent.GenerateCodeAsync(UserRequest.Trim());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating code");
+            ErrorMessage = "Failed to generate code. Please try again.";
+        }
+        finally
+        {
+            IsGenerating = false;
+        }
+    }
+
+    private async Task CopyToClipboard()
+    {
+        if (!string.IsNullOrEmpty(GeneratedCode))
+        {
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", GeneratedCode);
+        }
+    }
+}
