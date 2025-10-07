@@ -20,8 +20,8 @@ builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(Wel
 builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(FileIOSettings.SectionName));
 builder.Services.Configure<AgentsSettings>(builder.Configuration.GetSection(AgentsSettings.SectionName));
 
-// Register the code generation agent
-builder.Services.AddScoped<ICodeGenerationAgent, CodeGenerationAgent>();
+// Register the .NET code generation agent
+builder.Services.AddScoped<IDotNetDeveloper, DotNetDeveloper>();
 
 // Creates TRANSIENT kernel instance for each request
 var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<LlmSettings>();

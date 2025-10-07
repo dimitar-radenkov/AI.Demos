@@ -6,5 +6,5 @@ public sealed class AgentsSettings
 {
     public const string SectionName = "Agents";
 
-    public required CodeGenerationAgentSettings CodeGeneration { get; init; }
+    public required CodeGenerationAgentSettings DotNetDeveloper { get; init; }
 }

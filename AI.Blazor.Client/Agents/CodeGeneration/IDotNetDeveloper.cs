@@ -1,6 +1,6 @@
 namespace AI.Blazor.Client.Agents.CodeGeneration;
 
-public interface ICodeGenerationAgent
+public interface IDotNetDeveloper
 {
     Task<string> GenerateCodeAsync(string userInput, CancellationToken cancellationToken = default);
 }

@@ -7,14 +7,14 @@ using System.Text.RegularExpressions;
 
 namespace AI.Blazor.Client.Agents.CodeGeneration;
 
-public sealed class CodeGenerationAgent : ICodeGenerationAgent
+public sealed class DotNetDeveloper : IDotNetDeveloper
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
 
-    public CodeGenerationAgent(IOptions<AgentsSettings> agentsSettings)
+    public DotNetDeveloper(IOptions<AgentsSettings> agentsSettings)
     {
-        var settings = agentsSettings.Value.CodeGeneration;
+        var settings = agentsSettings.Value.DotNetDeveloper;
 
         var openAIClient = new OpenAIClient(
             new ApiKeyCredential(settings.ApiKey),

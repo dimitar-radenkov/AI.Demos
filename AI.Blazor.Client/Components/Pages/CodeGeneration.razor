@@ -3,11 +3,11 @@
 
 @using AI.Blazor.Client.Agents.CodeGeneration
 
-<PageTitle>Code Generation</PageTitle>
+<PageTitle>C# Code Generation</PageTitle>
 
 <div class="code-gen-container">
     <div class="code-gen-header">
-        <h3>AI Code Generator</h3>
+        <h3>C# Code Generator</h3>
         <p>Generate C# code using AI. Try: "create a static class that adds 2 numbers"</p>
     </div>
 
@@ -46,7 +46,7 @@
 
 @code {
     [Inject]
-    private ICodeGenerationAgent CodeGenerationAgent { get; set; } = default!;
+    private IDotNetDeveloper CodeGenerationAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<CodeGeneration> Logger { get; set; } = default!;
