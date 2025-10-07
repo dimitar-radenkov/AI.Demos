@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace AI.Blazor.Client.Agents.CodeGeneration;
 
-public sealed class DotNetDeveloperAgent : IDotNetDeveloperAgent
+public sealed partial class DotNetDeveloperAgent : IDotNetDeveloperAgent
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
@@ -42,14 +42,14 @@ public sealed class DotNetDeveloperAgent : IDotNetDeveloperAgent
     private static string ExtractCodeFromResponse(string response)
     {
         // Look for ```csharp code blocks first
-        var csharpMatch = Regex.Match(response, @"```csharp\s*\n(.*?)\n```", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        var csharpMatch = DotNetOutputRegex().Match(response);
         if (csharpMatch.Success)
         {
             return csharpMatch.Groups[1].Value.Trim();
         }
 
         // Fallback: look for any code block
-        var codeMatch = Regex.Match(response, @"```\s*\n(.*?)\n```", RegexOptions.Singleline);
+        var codeMatch = FallBackRegex().Match(response);
         if (codeMatch.Success)
         {
             return codeMatch.Groups[1].Value.Trim();
@@ -59,4 +59,10 @@ public sealed class DotNetDeveloperAgent : IDotNetDeveloperAgent
         // This handles cases where the AI doesn't use markdown formatting
         return response.Trim();
     }
+
+    [GeneratedRegex(@"```csharp\s*\n(.*?)\n```", RegexOptions.IgnoreCase | RegexOptions.Singleline, "en-US")]
+    private static partial Regex DotNetOutputRegex();
+
+    [GeneratedRegex(@"```\s*\n(.*?)\n```", RegexOptions.Singleline)]
+    private static partial Regex FallBackRegex();
 }
