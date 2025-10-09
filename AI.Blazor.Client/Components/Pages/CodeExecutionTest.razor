@@ -2,177 +2,131 @@
 @rendermode InteractiveServer
 @using AI.Blazor.Client.Agents.CodeExecution
 @using AI.Blazor.Client.Agents.CodeExecution.Models
-@inject ICodeExecutionAgent CodeExecutionAgent
+@inherits ComponentBase
 
-<div class="container-fluid py-3">
-    <h3 class="mb-3">
-        <span class="badge bg-primary">🚀</span> Code Execution Agent Test
-    </h3>
+<div class="code-execution-container">
+    <div class="code-execution-header">
+        <h3>
+            <span class="badge bg-primary">🚀</span> Code Execution Agent Test
+        </h3>
+    </div>
 
-    <div class="alert alert-warning d-flex align-items-center" role="alert">
-        <span class="fs-4 me-3">🔒</span>
-        <div>
+    <div class="security-warning">
+        <span class="security-warning-icon">🔒</span>
+        <div class="security-warning-content">
             <strong>Security Warning:</strong> This agent executes code with full application permissions.
             Only use with trusted code in development environments.
         </div>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label fw-bold">C# Code:</label>
-        <textarea @bind="code" 
+    <div class="code-input-section">
+        <label class="code-input-label">C# Code:</label>
+        <textarea @bind="Code" 
                   rows="8" 
-                  class="form-control font-monospace" 
+                  class="code-textarea" 
                   style="resize: vertical; min-height: 120px;"
                   placeholder="Enter C# code here..."></textarea>
     </div>
 
-    <div class="mb-4">
-        <div class="btn-group" role="group">
-            <button @onclick="ExecuteCode" class="btn btn-primary px-4" disabled="@isExecuting">
-                @if (isExecuting) 
-                { 
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    <span>Executing...</span> 
-                } 
-                else 
-                { 
-                    <span>▶️ Execute Code</span> 
-                }
-            </button>
-            <button @onclick="ValidateCode" class="btn btn-outline-secondary px-4" disabled="@isExecuting">
-                🔍 Validate Only
-            </button>
-        </div>
+    <div class="action-buttons">
+        <button @onclick="ExecuteCode" class="execute-btn" disabled="@IsExecuting">
+            @if (IsExecuting) 
+            { 
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <span>Executing...</span> 
+            } 
+            else 
+            { 
+                <span>▶️ Execute Code</span> 
+            }
+        </button>
+        <button @onclick="ValidateCode" class="validate-btn" disabled="@IsExecuting">
+            🔍 Validate Only
+        </button>
     </div>
 
-<div class="mb-4">
-    <label class="form-label fw-bold">📝 Example Code Snippets</label>
-    <div class="d-flex flex-wrap gap-2">
-        <div class="btn-group" role="group" aria-label="Success examples">
+    <div class="example-snippets">
+        <label class="example-snippets-label">📝 Example Code Snippets</label>
+        <div class="snippet-group">
             <button @onclick='() => LoadExample("1 + 2")' 
-                    class="btn btn-sm btn-outline-success" 
-                    disabled="@isExecuting"
+                    class="snippet-btn snippet-btn-success" 
+                    disabled="@IsExecuting"
                     title="Simple arithmetic operation">
                 ➕ Simple Math
             </button>
             <button @onclick='() => LoadExample("Enumerable.Range(1, 10).Sum()")' 
-                    class="btn btn-sm btn-outline-success" 
-                    disabled="@isExecuting"
+                    class="snippet-btn snippet-btn-success" 
+                    disabled="@IsExecuting"
                     title="LINQ query example">
                 🔢 LINQ Sum
             </button>
             <button @onclick='() => LoadExample("\"Hello World\".ToUpper()")' 
-                    class="btn btn-sm btn-outline-success" 
-                    disabled="@isExecuting"
+                    class="snippet-btn snippet-btn-success" 
+                    disabled="@IsExecuting"
                     title="String manipulation">
                 📝 String
             </button>
             <button @onclick='() => LoadExample("var x = 10;\nvar y = 20;\nx + y")' 
-                    class="btn btn-sm btn-outline-success" 
-                    disabled="@isExecuting"
+                    class="snippet-btn snippet-btn-success" 
+                    disabled="@IsExecuting"
                     title="Multiple statements">
                 📋 Multi-line
             </button>
         </div>
-        <div class="btn-group" role="group" aria-label="Error examples">
+        <div class="snippet-group">
             <button @onclick='() => LoadExample("1 / 0")' 
-                    class="btn btn-sm btn-outline-danger" 
-                    disabled="@isExecuting"
+                    class="snippet-btn snippet-btn-danger" 
+                    disabled="@IsExecuting"
                     title="Runtime error example">
                 💥 Div by Zero
             </button>
             <button @onclick='() => LoadExample("invalid code here")' 
-                    class="btn btn-sm btn-outline-danger" 
-                    disabled="@isExecuting"
+                    class="snippet-btn snippet-btn-danger" 
+                    disabled="@IsExecuting"
                     title="Compilation error example">
                 ⚠️ Invalid Syntax
             </button>
         </div>
     </div>
-</div>
 
-@if (executuionResult != null)
-{
-    <div class="mt-4">
-        <h4>Execution Result:</h4>
-        <div class="@(executuionResult.IsSuccess ? "alert alert-success" : "alert alert-danger")">
-            @if (executuionResult.IsSuccess && executuionResult.Data != null)
-            {
-                <h5>✅ Success</h5>
-                <p><strong>Return Value:</strong> <code>@executuionResult.Data.ReturnValue</code></p>
-                <p><strong>Type:</strong> <code>@executuionResult.Data.ReturnValue?.GetType().Name</code></p>
-                <p><strong>Execution Time:</strong> @executuionResult.Data.ExecutionTime.TotalMilliseconds ms</p>
-            }
-            else
-            {
-                <h5>❌ Error</h5>
-                <pre class="mb-0">@executuionResult.ErrorMessage</pre>
-            }
+    @if (ExecutionResult != null)
+    {
+        <div class="execution-result">
+            <h4>Execution Result:</h4>
+            <div class="@(ExecutionResult.IsSuccess ? "result-success" : "result-error")">
+                @if (ExecutionResult.IsSuccess && ExecutionResult.Data != null)
+                {
+                    <h5>✅ Success</h5>
+                    <p><strong>Return Value:</strong> <code>@ExecutionResult.Data.ReturnValue</code></p>
+                    <p><strong>Type:</strong> <code>@ExecutionResult.Data.ReturnValue?.GetType().Name</code></p>
+                    <p><strong>Execution Time:</strong> @ExecutionResult.Data.ExecutionTime.TotalMilliseconds ms</p>
+                }
+                else
+                {
+                    <h5>❌ Error</h5>
+                    <pre class="mb-0">@ExecutionResult.ErrorMessage</pre>
+                }
+            </div>
         </div>
-    </div>
-}
+    }
 
-@if (validationResult != null)
-{
-    <div class="mt-4">
-        <h4>Validation Result:</h4>
-        <div class="@(validationResult.IsSuccess ? "alert alert-info" : "alert alert-warning")">
-            @if (validationResult.IsSuccess)
-            {
-                <h5>✅ Code is valid</h5>
-                <p class="mb-0">The code compiles successfully without errors.</p>
-            }
-            else
-            {
-                <h5>⚠️ Compilation Errors</h5>
-                <pre class="mb-0">@validationResult.ErrorMessage</pre>
-            }
+    @if (ValidationResult != null)
+    {
+        <div class="validation-result">
+            <h4>Validation Result:</h4>
+            <div class="@(ValidationResult.IsSuccess ? "validation-success" : "validation-error")">
+                @if (ValidationResult.IsSuccess)
+                {
+                    <h5>✅ Code is valid</h5>
+                    <p class="mb-0">The code compiles successfully without errors.</p>
+                }
+                else
+                {
+                    <h5>⚠️ Compilation Errors</h5>
+                    <pre class="mb-0">@ValidationResult.ErrorMessage</pre>
+                }
+            </div>
         </div>
-    </div>
-}
-
-@code {
-    private string code = "1 + 2";
-    private ExecutionResult? executuionResult;
-    private ValidationResult? validationResult;
-    private bool isExecuting;
-
-    private async Task ExecuteCode()
-    {
-        executuionResult = null;
-        validationResult = null;
-        isExecuting = true;
-        try
-        {
-            executuionResult = await CodeExecutionAgent.ExecuteCodeAsync(code);
-        }
-        finally
-        {
-            isExecuting = false;
-        }
     }
-
-    private async Task ValidateCode()
-    {
-        executuionResult = null;
-        validationResult = null;
-        isExecuting = true;
-        try
-        {
-            validationResult = await CodeExecutionAgent.ValidateCodeAsync(code);
-        }
-        finally
-        {
-            isExecuting = false;
-        }
-    }
-
-    private void LoadExample(string exampleCode)
-    {
-        code = exampleCode;
-        executuionResult = null;
-        validationResult = null;
-    }
-}
 
 </div>
