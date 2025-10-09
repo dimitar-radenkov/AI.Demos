@@ -1,4 +1,4 @@
-using AI.Shared.Settings;
+using AI.Shared.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
 using OpenAI;
