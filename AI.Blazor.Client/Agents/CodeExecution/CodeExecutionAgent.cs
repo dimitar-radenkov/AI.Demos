@@ -63,7 +63,7 @@ public sealed class CodeExecutionAgent : ICodeExecutionAgent, IDisposable
         return options;
     }
     
-    public async Task<ExecutionResult> ExecuteCodeAsync(
+    public async Task<ExecutionResult> ExecuteCode(
         string code,
         CancellationToken cancellationToken = default)
     {
@@ -139,7 +139,7 @@ public sealed class CodeExecutionAgent : ICodeExecutionAgent, IDisposable
         }
     }
     
-    public async Task<ValidationResult> ValidateCodeAsync(string code)
+    public async Task<ValidationResult> ValidateCode(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
             return ValidationResult.Failure("Code cannot be empty");

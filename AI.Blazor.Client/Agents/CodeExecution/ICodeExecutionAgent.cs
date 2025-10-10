@@ -8,7 +8,7 @@ namespace AI.Blazor.Client.Agents.CodeExecution;
 /// </summary>
 public interface ICodeExecutionAgent
 {
-    Task<ExecutionResult> ExecuteCodeAsync(string code, CancellationToken cancellationToken = default);
+    Task<ExecutionResult> ExecuteCode(string code, CancellationToken cancellationToken = default);
 
-    Task<ValidationResult> ValidateCodeAsync(string code);
+    Task<ValidationResult> ValidateCode(string code);
 }

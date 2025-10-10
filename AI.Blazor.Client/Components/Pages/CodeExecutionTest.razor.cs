@@ -48,7 +48,7 @@ public partial class CodeExecutionTest : ComponentBase
 
         try
         {
-            ExecutionResult = await CodeExecutionAgent.ExecuteCodeAsync(Code);
+            ExecutionResult = await CodeExecutionAgent.ExecuteCode(Code);
         }
         catch (Exception ex)
         {
@@ -72,7 +72,7 @@ public partial class CodeExecutionTest : ComponentBase
 
         try
         {
-            ValidationResult = await CodeExecutionAgent.ValidateCodeAsync(Code);
+            ValidationResult = await CodeExecutionAgent.ValidateCode(Code);
         }
         catch (Exception ex)
         {
