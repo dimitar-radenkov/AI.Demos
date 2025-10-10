@@ -1,6 +1,6 @@
-using AI.Blazor.Client.Agents.CodeExecution.Models;
+using AI.Agents.CodeExecution.Models;
 
-namespace AI.Blazor.Client.Agents.CodeExecution;
+namespace AI.Agents.CodeExecution;
 
 /// <summary>
 /// Agent for dynamic C# code compilation and execution using Roslyn.

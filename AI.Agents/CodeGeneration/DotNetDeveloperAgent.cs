@@ -5,7 +5,7 @@ using OpenAI;
 using System.ClientModel;
 using System.Text.RegularExpressions;
 
-namespace AI.Blazor.Client.Agents.CodeGeneration;
+namespace AI.Agents.CodeGeneration;
 
 public sealed partial class DotNetDeveloperAgent : IDotNetDeveloperAgent
 {

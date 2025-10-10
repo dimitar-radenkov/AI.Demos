@@ -1,6 +1,6 @@
 using AI.Shared.Infrastructure;
 
-namespace AI.Blazor.Client.Agents.CodeExecution.Models;
+namespace AI.Agents.CodeExecution.Models;
 
 public sealed record ValidationResult : OperationResult<ValidationResult>;
 

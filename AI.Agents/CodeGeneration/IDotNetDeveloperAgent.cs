@@ -1,4 +1,4 @@
-namespace AI.Blazor.Client.Agents.CodeGeneration;
+namespace AI.Agents.CodeGeneration;
 
 public interface IDotNetDeveloperAgent
 {

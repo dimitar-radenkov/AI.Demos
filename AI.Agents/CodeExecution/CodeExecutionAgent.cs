@@ -1,13 +1,14 @@
-using AI.Blazor.Client.Agents.CodeExecution.Models;
+using AI.Agents.CodeExecution.Models;
 using AI.Shared.Settings.Agents;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace AI.Blazor.Client.Agents.CodeExecution;
+namespace AI.Agents.CodeExecution;
 
 public sealed class CodeExecutionAgent : ICodeExecutionAgent, IDisposable
 {

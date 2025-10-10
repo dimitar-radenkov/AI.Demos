@@ -1,5 +1,5 @@
-using AI.Blazor.Client.Agents.CodeGeneration;
-using AI.Blazor.Client.Agents.CodeExecution;
+using AI.Agents.CodeGeneration;
+using AI.Agents.CodeExecution;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
 using AI.Blazor.Client.Services.Markdown;

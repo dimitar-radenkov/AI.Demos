@@ -1,5 +1,5 @@
-using AI.Blazor.Client.Agents.CodeExecution;
-using AI.Blazor.Client.Agents.CodeExecution.Models;
+using AI.Agents.CodeExecution;
+using AI.Agents.CodeExecution.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
