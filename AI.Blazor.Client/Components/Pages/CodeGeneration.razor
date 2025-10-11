@@ -2,7 +2,7 @@
 @rendermode InteractiveServer
 
 @using AI.Agents.CodeGeneration
-@using AI.Agents.Models
+@using AI.Agents.Analysis
 
 <PageTitle>C# Code Generation</PageTitle>
 
@@ -72,7 +72,7 @@
         try
         {
             // Create basic requirements from user input for backward compatibility
-            var requirements = new AI.Agents.Models.Requirements
+            var requirements = new Requirements
             {
                 Task = UserRequest.Trim(),
                 Inputs = Array.Empty<string>(),

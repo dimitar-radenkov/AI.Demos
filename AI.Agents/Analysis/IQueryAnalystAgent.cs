@@ -1,5 +1,3 @@
-using AI.Agents.Models;
-
 namespace AI.Agents.Analysis;
 
 /// <summary>

@@ -1,4 +1,4 @@
-using AI.Agents.Models;
+using AI.Agents.Analysis;
 
 namespace AI.Agents.CodeGeneration;
 
