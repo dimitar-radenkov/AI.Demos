@@ -1,0 +1,144 @@
+@page "/test/query-analyst"
+@rendermode InteractiveServer
+@using AI.Agents.Analysis
+@using AI.Agents.Models
+@inherits ComponentBase
+
+<div class="query-analyst-container">
+    <div class="query-analyst-header">
+        <h3>
+            <span class="badge bg-primary">🔍</span> Query Analyst Agent
+        </h3>
+        <p class="header-description">Test the requirements analysis agent that converts natural language requests into structured requirements.</p>
+    </div>
+
+    <div class="request-input-section">
+        <label class="request-input-label">User Request:</label>
+        <textarea @bind="UserRequest" 
+                  rows="6" 
+                  class="request-textarea" 
+                  style="resize: vertical; min-height: 120px;"
+                  placeholder="Describe what you want to build in natural language..."></textarea>
+    </div>
+
+    <div class="action-buttons">
+        <button @onclick="AnalyzeRequest" class="analyze-btn" disabled="@IsAnalyzing">
+            @if (IsAnalyzing) 
+            { 
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <span>Analyzing...</span> 
+            } 
+            else 
+            { 
+                <span>🔍 Analyze Request</span> 
+            }
+        </button>
+    </div>
+
+    <div class="example-requests">
+        <label class="example-requests-label">📝 Example Requests</label>
+        <div class="request-group">
+            <button @onclick='() => LoadExample("Create a function that adds two numbers together")' 
+                    class="request-btn request-btn-primary" 
+                    disabled="@IsAnalyzing"
+                    title="Simple arithmetic function">
+                ➕ Add Two Numbers
+            </button>
+            <button @onclick='() => LoadExample("Write a program that greets a user by name")' 
+                    class="request-btn request-btn-primary" 
+                    disabled="@IsAnalyzing"
+                    title="Basic greeting functionality">
+                👋 User Greeting
+            </button>
+            <button @onclick='() => LoadExample("Make a function that checks if an email address is valid")' 
+                    class="request-btn request-btn-primary" 
+                    disabled="@IsAnalyzing"
+                    title="Email validation logic">
+                📧 Email Validator
+            </button>
+        </div>
+        <div class="request-group">
+            <button @onclick='() => LoadExample("Build a todo list that lets users add tasks and mark them as complete")' 
+                    class="request-btn request-btn-success" 
+                    disabled="@IsAnalyzing"
+                    title="Simple task management">
+                ✅ Todo List
+            </button>
+            <button @onclick='() => LoadExample("Create a temperature converter that changes Celsius to Fahrenheit")' 
+                    class="request-btn request-btn-success" 
+                    disabled="@IsAnalyzing"
+                    title="Unit conversion utility">
+                🌡️ Temperature Converter
+            </button>
+            <button @onclick='() => LoadExample("Write a program that reads a text file and counts the words")' 
+                    class="request-btn request-btn-success" 
+                    disabled="@IsAnalyzing"
+                    title="File processing basics">
+                � Word Counter
+            </button>
+        </div>
+    </div>
+
+    @if (AnalysisResult != null)
+    {
+        <div class="analysis-result">
+            <h4>Analysis Result:</h4>
+            <div class="@(AnalysisResult.IsSuccess ? "result-success" : "result-error")">
+                @if (AnalysisResult.IsSuccess && AnalysisResult.Data != null)
+                {
+                    <h5>✅ Analysis Successful</h5>
+                    
+                    <div class="requirements-section">
+                        <h6>🎯 Task</h6>
+                        <p class="task-description">@AnalysisResult.Data.Task</p>
+                    </div>
+
+                    @if (AnalysisResult.Data.Inputs.Length > 0)
+                    {
+                        <div class="requirements-section">
+                            <h6>📥 Inputs</h6>
+                            <ul class="requirements-list">
+                                @foreach (var input in AnalysisResult.Data.Inputs)
+                                {
+                                    <li>@input</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @if (AnalysisResult.Data.Outputs.Length > 0)
+                    {
+                        <div class="requirements-section">
+                            <h6>📤 Outputs</h6>
+                            <ul class="requirements-list">
+                                @foreach (var output in AnalysisResult.Data.Outputs)
+                                {
+                                    <li>@output</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @if (AnalysisResult.Data.Constraints.Length > 0)
+                    {
+                        <div class="requirements-section">
+                            <h6>⚖️ Constraints</h6>
+                            <ul class="requirements-list">
+                                @foreach (var constraint in AnalysisResult.Data.Constraints)
+                                {
+                                    <li>@constraint</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <h5>❌ Analysis Failed</h5>
+                    <pre class="mb-0">@AnalysisResult.ErrorMessage</pre>
+                }
+            </div>
+        </div>
+    }
+
+</div>
