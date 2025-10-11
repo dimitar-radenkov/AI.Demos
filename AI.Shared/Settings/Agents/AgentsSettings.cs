@@ -6,4 +6,5 @@ public sealed class AgentsSettings
 
     public required CodeGenerationAgentSettings Developer { get; init; }
     public required QueryAnalystAgentSettings QueryAnalyst { get; init; }
+    public required QAAgentSettings QA { get; init; }
 }
