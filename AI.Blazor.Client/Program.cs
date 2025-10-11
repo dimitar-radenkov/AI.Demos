@@ -29,6 +29,7 @@ builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSecti
 builder.Services.AddScoped<IDeveloperAgent, DeveloperAgent>();
 builder.Services.AddScoped<IQueryAnalystAgent, QueryAnalystAgent>();
 builder.Services.AddScoped<IQAAgent, QAAgent>();
+builder.Services.AddScoped<QAPlugin>();
 builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 
 // Creates TRANSIENT kernel instance for each request
