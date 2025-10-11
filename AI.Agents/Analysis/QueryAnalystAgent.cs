@@ -2,7 +2,6 @@ using AI.Shared.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
 using OpenAI;
-using OpenAI.Chat;
 using System.ClientModel;
 using System.Text.Json;
 
@@ -26,7 +25,9 @@ public sealed partial class QueryAnalystAgent : IQueryAnalystAgent
 
         this.agent = openAIClient
             .GetChatClient(settings.Model)
-            .CreateAIAgent(instructions: settings.GetSystemPrompt());
+            .CreateAIAgent(
+                name: "Query-Analyst-Agent",
+                instructions: settings.GetSystemPrompt());
 
         this.agentThread = this.agent.GetNewThread();
     }

@@ -1,14 +1,15 @@
 using System.ClientModel;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AI.Agents.CodeGeneration;
 using AI.Shared.Services.CodeExecution;
 using AI.Shared.Settings.Agents;
 using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAI;
-using OpenAI.Chat;
 
 namespace AI.Agents.QualityAssurance;
 
@@ -29,6 +30,17 @@ public sealed partial class QAAgent : IQAAgent
 
         var qaSettings = agentsSettings.Value.QA;
 
+        // Create JSON schema for structured output
+        var schema = AIJsonUtilities.CreateJsonSchema(typeof(AiReviewResult));
+
+        var chatOptions = new ChatOptions
+        {
+            ResponseFormat = ChatResponseFormatJson.ForJsonSchema(
+                schema: schema,
+                schemaName: "CodeReview",
+                schemaDescription: "Code quality review with approval status and feedback")
+        };
+
         var openAIClient = new OpenAIClient(
             new ApiKeyCredential(qaSettings.ApiKey),
             new OpenAIClientOptions
@@ -38,7 +50,12 @@ public sealed partial class QAAgent : IQAAgent
 
         this.agent = openAIClient
             .GetChatClient(qaSettings.Model)
-            .CreateAIAgent(instructions: qaSettings.GetSystemPrompt());
+            .CreateAIAgent(new ChatClientAgentOptions
+            {
+                Name = "QA-Agent",
+                Instructions = qaSettings.GetSystemPrompt(),
+                ChatOptions = chatOptions
+            });
 
         this.agentThread = this.agent.GetNewThread();
     }
@@ -60,13 +77,14 @@ public sealed partial class QAAgent : IQAAgent
                     "Code is empty or null");
             }
 
-            // Step 1: AI Code Review
+            // Step 1: AI Code Review with structured output
             var reviewPrompt = $"Analyze the following C# code:\n\n```csharp\n{artifact.Code}\n```";
             var response = await this.agent.RunAsync(reviewPrompt, this.agentThread, cancellationToken: cancellationToken);
 
             this.logger.LogDebug("AI Review Response: {Response}", response.Text);
 
-            var reviewResult = ParseAiReview(response.Text);
+            // Deserialize structured output directly
+            var reviewResult = response.Deserialize<AiReviewResult>(JsonSerializerOptions.Web);
             if (!reviewResult.Approved)
             {
                 this.logger.LogWarning("AI rejected code. Issues: {Issues}", string.Join(", ", reviewResult.Issues));
@@ -119,43 +137,7 @@ public sealed partial class QAAgent : IQAAgent
         }
     }
 
-    private static AiReviewResult ParseAiReview(string aiResponse)
-    {
-        try
-        {
-            // Extract JSON from markdown code blocks if present
-            var jsonContent = aiResponse;
-            if (aiResponse.Contains("```json"))
-            {
-                var startIndex = aiResponse.IndexOf("```json") + 7;
-                var endIndex = aiResponse.IndexOf("```", startIndex);
-                if (endIndex > startIndex)
-                {
-                    jsonContent = aiResponse.Substring(startIndex, endIndex - startIndex).Trim();
-                }
-            }
-            else if (aiResponse.Contains("```"))
-            {
-                var startIndex = aiResponse.IndexOf("```") + 3;
-                var endIndex = aiResponse.IndexOf("```", startIndex);
-                if (endIndex > startIndex)
-                {
-                    jsonContent = aiResponse.Substring(startIndex, endIndex - startIndex).Trim();
-                }
-            }
 
-            var review = JsonSerializer.Deserialize<AiReviewResult>(jsonContent, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return review ?? new AiReviewResult { Approved = false, Issues = ["Failed to parse AI review response"] };
-        }
-        catch
-        {
-            return new AiReviewResult { Approved = false, Issues = ["Invalid AI review response format"] };
-        }
-    }
 
     private static CodeQualityResult CreateSuccessResult(string output, TimeSpan executionTime, string[] recommendations)
     {
@@ -191,9 +173,16 @@ public sealed partial class QAAgent : IQAAgent
 
     private sealed record AiReviewResult
     {
+        [JsonPropertyName("approved")]
         public bool Approved { get; init; }
+        
+        [JsonPropertyName("issues")]
         public string[] Issues { get; init; } = Array.Empty<string>();
+        
+        [JsonPropertyName("warnings")]
         public string[] Warnings { get; init; } = Array.Empty<string>();
+        
+        [JsonPropertyName("recommendations")]
         public string[] Recommendations { get; init; } = Array.Empty<string>();
     }
 }

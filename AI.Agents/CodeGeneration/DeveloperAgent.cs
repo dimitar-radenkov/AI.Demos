@@ -26,7 +26,9 @@ public sealed partial class DeveloperAgent : IDeveloperAgent
 
         this.agent = openAIClient
             .GetChatClient(settings.Model)
-            .CreateAIAgent(instructions: settings.GetSystemPrompt());
+            .CreateAIAgent(
+                name: "Developer-Agent",
+                instructions: settings.GetSystemPrompt());
 
         this.agentThread = this.agent.GetNewThread();
     }
