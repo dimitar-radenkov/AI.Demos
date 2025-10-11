@@ -1,5 +1,5 @@
 using AI.Agents.CodeGeneration;
-using AI.Agents.CodeExecution;
+using AI.Shared.Services.CodeExecution;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
 using AI.Blazor.Client.Services.Markdown;
@@ -25,7 +25,7 @@ builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSecti
 
 // Register the .NET code generation agent
 builder.Services.AddScoped<IDotNetDeveloperAgent, DotNetDeveloperAgent>();
-builder.Services.AddScoped<ICodeExecutionAgent, CodeExecutionAgent>();
+builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 
 // Creates TRANSIENT kernel instance for each request
 var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<LlmSettings>();

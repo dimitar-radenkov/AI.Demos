@@ -1,12 +1,12 @@
-using AI.Agents.CodeExecution.Models;
+using AI.Shared.Services.CodeExecution.Models;
 
-namespace AI.Agents.CodeExecution;
+namespace AI.Shared.Services.CodeExecution;
 
 /// <summary>
-/// Agent for dynamic C# code compilation and execution using Roslyn.
+/// Service for dynamic C# code compilation and execution using Roslyn.
 ///  WARNING: Code executes with full application permissions. Use only with trusted code.
 /// </summary>
-public interface ICodeExecutionAgent
+public interface ICodeExecutionService
 {
     Task<ExecutionResult> ExecuteCode(string code, CancellationToken cancellationToken = default);
 

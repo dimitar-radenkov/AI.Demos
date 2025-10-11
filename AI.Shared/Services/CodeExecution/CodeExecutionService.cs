@@ -1,4 +1,4 @@
-using AI.Agents.CodeExecution.Models;
+using AI.Shared.Services.CodeExecution.Models;
 using AI.Shared.Settings.Agents;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -8,9 +8,9 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace AI.Agents.CodeExecution;
+namespace AI.Shared.Services.CodeExecution;
 
-public sealed class CodeExecutionAgent : ICodeExecutionAgent, IDisposable
+public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
 {
     private readonly SemaphoreSlim semaphore;
     private readonly ScriptOptions scriptOptions;
@@ -18,11 +18,11 @@ public sealed class CodeExecutionAgent : ICodeExecutionAgent, IDisposable
     private readonly bool enableCaching;
     private readonly int maxCacheSize;
     private readonly ConcurrentDictionary<string, Script<object>> scriptCache;
-    private readonly ILogger<CodeExecutionAgent> logger;
+    private readonly ILogger<CodeExecutionService> logger;
 
-    public CodeExecutionAgent(
+    public CodeExecutionService(
         IOptions<CodeExecutionSettings> settings,
-        ILogger<CodeExecutionAgent> logger)
+        ILogger<CodeExecutionService> logger)
     {
         var config = settings.Value;
         this.logger = logger;
@@ -34,7 +34,7 @@ public sealed class CodeExecutionAgent : ICodeExecutionAgent, IDisposable
         this.scriptOptions = BuildScriptOptions(config);
 
         this.logger.LogInformation(
-            "CodeExecutionAgent initialized (timeout={Timeout}s, concurrency={Concurrency})",
+            "CodeExecutionService initialized (timeout={Timeout}s, concurrency={Concurrency})",
             config.MaxExecutionTimeSeconds,
             config.MaxConcurrentExecutions);
     }

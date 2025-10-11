@@ -12,9 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Code Execution Dependencies -->
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.14.0" />
-    
     <!-- Code Generation Dependencies -->
     <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-preview.251002.1" />
     <PackageReference Include="OpenAI" Version="2.5.0" />

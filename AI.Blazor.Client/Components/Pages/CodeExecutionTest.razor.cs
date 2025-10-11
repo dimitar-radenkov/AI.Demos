@@ -1,5 +1,5 @@
-using AI.Agents.CodeExecution;
-using AI.Agents.CodeExecution.Models;
+using AI.Shared.Services.CodeExecution;
+using AI.Shared.Services.CodeExecution.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +12,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class CodeExecutionTest : ComponentBase
 {
     [Inject]
-    private ICodeExecutionAgent CodeExecutionAgent { get; set; } = default!;
+    private ICodeExecutionService CodeExecutionService { get; set; } = default!;
 
     [Inject]
     private ILogger<CodeExecutionTest> Logger { get; set; } = default!;
@@ -48,7 +48,7 @@ public partial class CodeExecutionTest : ComponentBase
 
         try
         {
-            ExecutionResult = await CodeExecutionAgent.ExecuteCode(Code);
+            ExecutionResult = await CodeExecutionService.ExecuteCode(Code);
         }
         catch (Exception ex)
         {
@@ -72,7 +72,7 @@ public partial class CodeExecutionTest : ComponentBase
 
         try
         {
-            ValidationResult = await CodeExecutionAgent.ValidateCode(Code);
+            ValidationResult = await CodeExecutionService.ValidateCode(Code);
         }
         catch (Exception ex)
         {

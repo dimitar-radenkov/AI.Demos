@@ -1,6 +1,6 @@
 using AI.Shared.Infrastructure;
 
-namespace AI.Agents.CodeExecution.Models;
+namespace AI.Shared.Services.CodeExecution.Models;
 
 public sealed record ValidationResult : OperationResult<ValidationResult>;
 
