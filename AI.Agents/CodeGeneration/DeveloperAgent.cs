@@ -1,3 +1,4 @@
+using AI.Agents.Models;
 using AI.Shared.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
@@ -7,14 +8,14 @@ using System.Text.RegularExpressions;
 
 namespace AI.Agents.CodeGeneration;
 
-public sealed partial class DotNetDeveloperAgent : IDotNetDeveloperAgent
+public sealed partial class DeveloperAgent : IDeveloperAgent
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
 
-    public DotNetDeveloperAgent(IOptions<AgentsSettings> agentsSettings)
+    public DeveloperAgent(IOptions<AgentsSettings> agentsSettings)
     {
-        var settings = agentsSettings.Value.DotNetDeveloper;
+        var settings = agentsSettings.Value.Developer;
 
         var openAIClient = new OpenAIClient(
             new ApiKeyCredential(settings.ApiKey),
@@ -30,13 +31,49 @@ public sealed partial class DotNetDeveloperAgent : IDotNetDeveloperAgent
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<string> GenerateCodeAsync(
-        string userInput,
+    public async Task<CodeArtifactResult> GenerateCodeAsync(
+        Requirements requirements,
         CancellationToken cancellationToken = default)
     {
-        var response = await this.agent.RunAsync(userInput, this.agentThread, cancellationToken: cancellationToken);
+        var prompt = BuildCodeGenerationPrompt(requirements);
+        var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
 
-        return ExtractCodeFromResponse(response.Text);
+        var code = ExtractCodeFromResponse(response.Text);
+
+        var codeArtifact = new CodeArtifact
+        {
+            Code = code,
+            Language = "csharp",
+            GeneratedAt = DateTime.UtcNow,
+            Requirements = requirements
+        };
+
+        return CodeArtifactResult.Success(codeArtifact);
+    }
+
+    private static string BuildCodeGenerationPrompt(Requirements requirements)
+    {
+        var prompt = $"Generate C# code that implements the following requirements:\n\n" +
+                     $"Task: {requirements.Task}\n";
+
+        if (requirements.Inputs.Length > 0)
+        {
+            prompt += $"Inputs: {string.Join(", ", requirements.Inputs)}\n";
+        }
+
+        if (requirements.Outputs.Length > 0)
+        {
+            prompt += $"Outputs: {string.Join(", ", requirements.Outputs)}\n";
+        }
+
+        if (requirements.Constraints.Length > 0)
+        {
+            prompt += $"Constraints: {string.Join(", ", requirements.Constraints)}\n";
+        }
+
+        prompt += "\nProvide only the C# code implementation, properly formatted and with necessary using statements.";
+
+        return prompt;
     }
 
     private static string ExtractCodeFromResponse(string response)

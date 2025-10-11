@@ -1,0 +1,129 @@
+@page "/test/developer"
+@rendermode InteractiveServer
+@using AI.Agents.CodeGeneration
+@using AI.Agents.Models
+@inherits ComponentBase
+
+<div class="developer-container">
+    <div class="developer-header">
+        <h3>
+            <span class="badge bg-success">💻</span> Developer Agent
+        </h3>
+        <p class="header-description">Test the code generation agent that converts structured requirements into C# code.</p>
+    </div>
+
+    <div class="requirements-input-section">
+        <label class="requirements-input-label">Requirements:</label>
+        <div class="requirements-fields">
+            <div class="field-group">
+                <label for="task">🎯 Task:</label>
+                <input id="task" @bind="TaskText" type="text" class="form-control" placeholder="What needs to be implemented?" />
+            </div>
+            
+            <div class="field-group">
+                <label for="inputs">📥 Inputs (one per line):</label>
+                <textarea id="inputs" @bind="InputsText" rows="3" class="form-control" placeholder="Input parameters or data sources"></textarea>
+            </div>
+            
+            <div class="field-group">
+                <label for="outputs">📤 Outputs (one per line):</label>
+                <textarea id="outputs" @bind="OutputsText" rows="3" class="form-control" placeholder="Expected results or return values"></textarea>
+            </div>
+            
+            <div class="field-group">
+                <label for="constraints">⚖️ Constraints (one per line):</label>
+                <textarea id="constraints" @bind="ConstraintsText" rows="3" class="form-control" placeholder="Technical requirements or limitations"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button @onclick="GenerateCode" class="generate-btn" disabled="@IsGenerating">
+            @if (IsGenerating) 
+            { 
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <span>Generating...</span> 
+            } 
+            else 
+            { 
+                <span>💻 Generate Code</span> 
+            }
+        </button>
+    </div>
+
+    <div class="example-requirements">
+        <label class="example-requirements-label">📝 Example Requirements</label>
+        <div class="requirements-group">
+            <button @onclick="LoadExampleSimple" 
+                    class="requirements-btn requirements-btn-primary" 
+                    disabled="@IsGenerating"
+                    title="Simple arithmetic function">
+                ➕ Add Two Numbers
+            </button>
+            <button @onclick="LoadExampleGreeting" 
+                    class="requirements-btn requirements-btn-primary" 
+                    disabled="@IsGenerating"
+                    title="Basic greeting functionality">
+                👋 User Greeting
+            </button>
+            <button @onclick="LoadExampleValidation" 
+                    class="requirements-btn requirements-btn-primary" 
+                    disabled="@IsGenerating"
+                    title="Email validation logic">
+                📧 Email Validator
+            </button>
+        </div>
+        <div class="requirements-group">
+            <button @onclick="LoadExampleTodo" 
+                    class="requirements-btn requirements-btn-success" 
+                    disabled="@IsGenerating"
+                    title="Simple task management">
+                ✅ Todo List
+            </button>
+            <button @onclick="LoadExampleConverter" 
+                    class="requirements-btn requirements-btn-success" 
+                    disabled="@IsGenerating"
+                    title="Unit conversion utility">
+                🌡️ Temperature Converter
+            </button>
+            <button @onclick="LoadExampleCounter" 
+                    class="requirements-btn requirements-btn-success" 
+                    disabled="@IsGenerating"
+                    title="File processing basics">
+                📄 Word Counter
+            </button>
+        </div>
+    </div>
+
+    @if (CodeResult != null)
+    {
+        <div class="code-result">
+            <h4>Generated Code:</h4>
+            <div class="@(CodeResult.IsSuccess ? "result-success" : "result-error")">
+                @if (CodeResult.IsSuccess && CodeResult.Data != null)
+                {
+                    <h5>✅ Code Generation Successful</h5>
+                    
+                    <div class="code-artifact-section">
+                        <h6>📋 Code Artifact Details</h6>
+                        <div class="artifact-metadata">
+                            <span class="badge bg-info">Generated: @CodeResult.Data.GeneratedAt.ToString("g")</span>
+                            <span class="badge bg-secondary">Language: @CodeResult.Data.Language</span>
+                        </div>
+                    </div>
+
+                    <div class="code-section">
+                        <h6>💻 Generated Code</h6>
+                        <pre class="code-block"><code class="language-csharp">@CodeResult.Data.Code</code></pre>
+                    </div>
+                }
+                else
+                {
+                    <h5>❌ Code Generation Failed</h5>
+                    <pre class="mb-0">@CodeResult.ErrorMessage</pre>
+                }
+            </div>
+        </div>
+    }
+
+</div>

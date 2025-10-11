@@ -25,7 +25,7 @@ builder.Services.Configure<AgentsSettings>(builder.Configuration.GetSection(Agen
 builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSection(CodeExecutionSettings.SectionName));
 
 // Register the .NET code generation agent
-builder.Services.AddScoped<IDotNetDeveloperAgent, DotNetDeveloperAgent>();
+builder.Services.AddScoped<IDeveloperAgent, DeveloperAgent>();
 builder.Services.AddScoped<IQueryAnalystAgent, QueryAnalystAgent>();
 builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 
