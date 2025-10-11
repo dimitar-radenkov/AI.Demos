@@ -4,5 +4,5 @@ namespace AI.Agents.QualityAssurance;
 
 public interface IQAAgent
 {
-    Task<CodeQualityResult> ValidateAndTestAsync(CodeArtifact artifact, CancellationToken cancellationToken = default);
+    Task<CodeQualityResult> Validate(CodeArtifact artifact, CancellationToken cancellationToken = default);
 }

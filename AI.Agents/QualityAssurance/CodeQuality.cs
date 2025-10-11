@@ -39,7 +39,7 @@ public sealed class CodeQuality
     public required TimeSpan ExecutionTime { get; init; }
     
     [JsonPropertyName("ai_recommendations")]
-    public string[] AiRecommendations { get; init; } = Array.Empty<string>();
+    public string[] AiRecommendations { get; init; } = [];
     
     [JsonPropertyName("ai_approved")]
     public bool AiApproved { get; init; } = true;

@@ -36,7 +36,7 @@ public partial class TestQA : ComponentBase
     /// <summary>
     /// Validates and tests the code using the QA Agent.
     /// </summary>
-    protected async Task ValidateAndTest()
+    protected async Task Validate()
     {
         TestResult = null;
         IsTesting = true;
@@ -57,7 +57,7 @@ public partial class TestQA : ComponentBase
                 }
             };
 
-            TestResult = await QAAgent.ValidateAndTestAsync(artifact);
+            TestResult = await QAAgent.Validate(artifact);
         }
         catch (Exception ex)
         {
@@ -88,6 +88,7 @@ public partial class TestQA : ComponentBase
         {
             return "result-success";
         }
+
         return "result-error";
     }
 

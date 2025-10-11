@@ -18,7 +18,7 @@
     </div>
 
     <div class="action-buttons">
-        <button @onclick="ValidateAndTest" class="test-btn" disabled="@IsTesting">
+        <button @onclick="Validate" class="test-btn" disabled="@IsTesting">
             @if (IsTesting) 
             { 
                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -26,7 +26,7 @@
             } 
             else 
             { 
-                <span>🔍 Validate & Test</span> 
+                <span>🔍 Validate</span> 
             }
         </button>
     </div>

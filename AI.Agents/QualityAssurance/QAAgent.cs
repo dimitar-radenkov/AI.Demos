@@ -38,15 +38,16 @@ public sealed partial class QAAgent : IQAAgent
 
         var chatOptions = new ChatOptions
         {
-            ResponseFormat = ChatResponseFormatJson.ForJsonSchema(
-                schema: schema,
-                schemaName: "CodeQuality",
-                schemaDescription: "Code quality assessment with validation, execution results, and AI recommendations"),
+            //ResponseFormat = ChatResponseFormatJson.ForJsonSchema(
+            //    schema: schema,
+            //    schemaName: "CodeQuality",
+            //    schemaDescription: "Code quality assessment with validation, execution results, and AI recommendations"),
             Tools =
             [
                 AIFunctionFactory.Create(qaPlugin.ValidateCode),
                 AIFunctionFactory.Create(qaPlugin.ExecuteCode)
-            ]
+            ],
+            ToolMode = ChatToolMode.Auto
         };
 
         this.agent = openAIClient
@@ -62,7 +63,7 @@ public sealed partial class QAAgent : IQAAgent
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<CodeQualityResult> ValidateAndTestAsync(CodeArtifact artifact, CancellationToken cancellationToken = default)
+    public async Task<CodeQualityResult> Validate(CodeArtifact artifact, CancellationToken cancellationToken = default)
     {
         var stopwatch = Stopwatch.StartNew();
 
@@ -70,10 +71,7 @@ public sealed partial class QAAgent : IQAAgent
         {
             this.logger.LogInformation("Starting AI-powered QA validation for {CodeLength} characters", artifact.Code?.Length ?? 0);
 
-            if (string.IsNullOrWhiteSpace(artifact.Code))
-            {
-                return CodeQualityResult.Failure("Code is empty or null");
-            }
+            if (string.IsNullOrWhiteSpace(artifact.Code)) return CodeQualityResult.Failure("Code is empty or null");
 
             var prompt = $"Analyze and test this C# code using ValidateCode and ExecuteCode tools, then provide your CodeQuality assessment:\n\n{artifact.Code}";
 
