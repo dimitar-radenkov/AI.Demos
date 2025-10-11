@@ -1,6 +1,4 @@
-using AI.Shared.Settings.Agents;
-
-namespace AI.Shared.Settings;
+namespace AI.Shared.Settings.Agents;
 
 public sealed class AgentsSettings
 {

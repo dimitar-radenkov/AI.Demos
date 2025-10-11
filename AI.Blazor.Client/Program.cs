@@ -1,4 +1,5 @@
-using AI.Blazor.Client.Agents.CodeGeneration;
+using AI.Agents.CodeGeneration;
+using AI.Agents.CodeExecution;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
 using AI.Blazor.Client.Services.Markdown;
@@ -7,6 +8,7 @@ using AI.Shared.Plugins;
 using AI.Shared.Settings;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Plugins.Core;
+using AI.Shared.Settings.Agents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +21,11 @@ builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSe
 builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(WelcomeSettings.SectionName));
 builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(FileIOSettings.SectionName));
 builder.Services.Configure<AgentsSettings>(builder.Configuration.GetSection(AgentsSettings.SectionName));
+builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSection(CodeExecutionSettings.SectionName));
 
 // Register the .NET code generation agent
 builder.Services.AddScoped<IDotNetDeveloperAgent, DotNetDeveloperAgent>();
+builder.Services.AddScoped<ICodeExecutionAgent, CodeExecutionAgent>();
 
 // Creates TRANSIENT kernel instance for each request
 var llmOptions = builder.Configuration.GetSection(LlmSettings.SectionName).Get<LlmSettings>();

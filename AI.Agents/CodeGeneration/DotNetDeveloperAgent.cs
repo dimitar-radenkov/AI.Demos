@@ -1,11 +1,11 @@
-using AI.Shared.Settings;
+using AI.Shared.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using System.ClientModel;
 using System.Text.RegularExpressions;
 
-namespace AI.Blazor.Client.Agents.CodeGeneration;
+namespace AI.Agents.CodeGeneration;
 
 public sealed partial class DotNetDeveloperAgent : IDotNetDeveloperAgent
 {

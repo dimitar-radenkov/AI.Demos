@@ -8,3 +8,4 @@
 # Build results
 [Bb]in/
 [Oo]bj/
+*.md

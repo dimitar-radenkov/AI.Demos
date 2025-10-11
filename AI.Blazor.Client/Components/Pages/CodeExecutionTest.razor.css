@@ -1,0 +1,335 @@
+/* Code Execution Test Page Styles */
+.code-execution-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.code-execution-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.code-execution-header h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.security-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 2px solid #ffeaa7;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
+}
+
+.security-warning-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.security-warning-content {
+    flex: 1;
+}
+
+.security-warning-content strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+}
+
+.code-input-section {
+    margin-bottom: 2rem;
+}
+
+.code-input-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.code-textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-size: 0.9rem;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+}
+
+.code-textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.code-textarea::placeholder {
+    color: #9ca3af;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.execute-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.execute-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.execute-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.validate-btn {
+    padding: 0.75rem 1.5rem;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.validate-btn:hover:not(:disabled) {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.validate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.example-snippets {
+    margin-bottom: 2rem;
+}
+
+.example-snippets-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.snippet-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.snippet-btn {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+}
+
+.snippet-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.snippet-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.snippet-btn-success {
+    background: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.snippet-btn-success:hover:not(:disabled) {
+    background: #c3e6cb;
+    border-color: #b1dfbb;
+}
+
+.snippet-btn-danger {
+    background: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.snippet-btn-danger:hover:not(:disabled) {
+    background: #f5c6cb;
+    border-color: #f1aeb5;
+}
+
+.execution-result,
+.validation-result {
+    margin-top: 2rem;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.execution-result h4,
+.validation-result h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.result-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 2px solid #c3e6cb;
+    color: #155724;
+}
+
+.result-error {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border: 2px solid #f5c6cb;
+    color: #721c24;
+}
+
+.validation-success {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border: 2px solid #bee5eb;
+    color: #0c5460;
+}
+
+.validation-error {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffeaa7;
+    color: #856404;
+}
+
+.result-success h5,
+.result-error h5,
+.validation-success h5,
+.validation-error h5 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.result-success pre,
+.result-error pre,
+.validation-success pre,
+.validation-error pre {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.result-success code {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-size: 0.85em;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .code-execution-container {
+        padding: 1rem;
+    }
+
+    .code-execution-header h3 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .security-warning {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .execute-btn,
+    .validate-btn {
+        justify-content: center;
+    }
+
+    .snippet-group {
+        justify-content: center;
+    }
+
+    .code-textarea {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+}
+
+@media (max-width: 480px) {
+    .code-execution-container {
+        padding: 0.5rem;
+    }
+
+    .snippet-btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
