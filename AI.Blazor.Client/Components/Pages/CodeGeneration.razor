@@ -80,7 +80,7 @@
                 Constraints = Array.Empty<string>()
             };
             
-            var result = await CodeGenerationAgent.GenerateCodeAsync(requirements);
+            var result = await CodeGenerationAgent.GenerateCode(requirements);
             
             if (result.IsSuccess && result.Data != null)
             {
