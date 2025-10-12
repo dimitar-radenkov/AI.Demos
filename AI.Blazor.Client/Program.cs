@@ -1,4 +1,6 @@
 using AI.Agents.CodeGeneration;
+using AI.Agents.Analysis;
+using AI.Agents.QualityAssurance;
 using AI.Shared.Services.CodeExecution;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
@@ -24,7 +26,10 @@ builder.Services.Configure<AgentsSettings>(builder.Configuration.GetSection(Agen
 builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSection(CodeExecutionSettings.SectionName));
 
 // Register the .NET code generation agent
-builder.Services.AddScoped<IDotNetDeveloperAgent, DotNetDeveloperAgent>();
+builder.Services.AddScoped<IDeveloperAgent, DeveloperAgent>();
+builder.Services.AddScoped<IQueryAnalystAgent, QueryAnalystAgent>();
+builder.Services.AddScoped<IQAAgent, QAAgent>();
+builder.Services.AddScoped<QAPlugin>();
 builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 
 // Creates TRANSIENT kernel instance for each request

@@ -1,0 +1,110 @@
+@page "/test/qa"
+@rendermode InteractiveServer
+@using AI.Agents.QualityAssurance
+@using AI.Agents.CodeGeneration
+@inherits ComponentBase
+
+<div class="qa-container">
+    <div class="qa-header">
+        <h3>
+            <span class="badge bg-warning">🔍</span> QA Agent
+        </h3>
+        <p class="header-description">Test the quality assurance agent that validates and executes C# code.</p>
+    </div>
+
+    <div class="code-input-section">
+        <label class="code-input-label">C# Code to Test:</label>
+        <textarea @bind="CodeInput" rows="15" class="form-control code-textarea" placeholder="Enter C# code here..."></textarea>
+    </div>
+
+    <div class="action-buttons">
+        <button @onclick="Validate" class="test-btn" disabled="@IsTesting">
+            @if (IsTesting) 
+            { 
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <span>Testing...</span> 
+            } 
+            else 
+            { 
+                <span>🔍 Validate</span> 
+            }
+        </button>
+    </div>
+
+    <div class="example-codes">
+        <label class="example-codes-label">📝 Example Code</label>
+        <div class="codes-group">
+            <button @onclick="() => LoadExample(ExampleValid)" 
+                    class="code-btn code-btn-success" 
+                    disabled="@IsTesting"
+                    title="Valid code that executes successfully">
+                ✅ Valid Code
+            </button>
+            <button @onclick="() => LoadExample(ExampleSyntaxError)" 
+                    class="code-btn code-btn-danger" 
+                    disabled="@IsTesting"
+                    title="Code with compilation errors">
+                ❌ Syntax Error
+            </button>
+            <button @onclick="() => LoadExample(ExampleRuntimeError)" 
+                    class="code-btn code-btn-danger" 
+                    disabled="@IsTesting"
+                    title="Code that throws runtime exception">
+                💥 Runtime Error
+            </button>
+        </div>
+        <div class="codes-group">
+            <button @onclick="() => LoadExample(ExampleLoop)" 
+                    class="code-btn code-btn-info" 
+                    disabled="@IsTesting"
+                    title="Code with iteration">
+                🔄 Loop Example
+            </button>
+            <button @onclick="() => LoadExample(ExampleDateTime)" 
+                    class="code-btn code-btn-info" 
+                    disabled="@IsTesting"
+                    title="Code working with dates">
+                📅 DateTime
+            </button>
+            <button @onclick="() => LoadExample(ExampleMath)" 
+                    class="code-btn code-btn-info" 
+                    disabled="@IsTesting"
+                    title="Mathematical calculations">
+                🔢 Math Operations
+            </button>
+        </div>
+    </div>
+
+    @if (TestResult != null)
+    {
+        <div class="test-result">
+            <h4>Test Results:</h4>
+            <div class="@GetResultClass()">
+                @if (TestResult.IsSuccess && TestResult.Data != null)
+                {
+                    var quality = TestResult.Data;
+                    
+                    <div class="result-header">
+                        <h5>✅ QA Agent Response</h5>
+                        <div class="status-badges">
+                            <span class="badge bg-info">
+                                Duration: @quality.Duration.TotalMilliseconds.ToString("F2")ms
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="ai-feedback-section">
+                        <h6>🤖 AI Analysis</h6>
+                        <pre class="output-block">@quality.Result</pre>
+                    </div>
+                }
+                else
+                {
+                    <h5>❌ Test Failed</h5>
+                    <pre class="mb-0">@TestResult.ErrorMessage</pre>
+                }
+            </div>
+        </div>
+    }
+
+</div>

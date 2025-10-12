@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 
 @using AI.Agents.CodeGeneration
+@using AI.Agents.Analysis
 
 <PageTitle>C# Code Generation</PageTitle>
 
@@ -46,7 +47,7 @@
 
 @code {
     [Inject]
-    private IDotNetDeveloperAgent CodeGenerationAgent { get; set; } = default!;
+    private IDeveloperAgent CodeGenerationAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<CodeGeneration> Logger { get; set; } = default!;
@@ -70,7 +71,25 @@
 
         try
         {
-            GeneratedCode = await CodeGenerationAgent.GenerateCodeAsync(UserRequest.Trim());
+            // Create basic requirements from user input for backward compatibility
+            var requirements = new Requirements
+            {
+                Task = UserRequest.Trim(),
+                Inputs = Array.Empty<string>(),
+                Outputs = Array.Empty<string>(),
+                Constraints = Array.Empty<string>()
+            };
+            
+            var result = await CodeGenerationAgent.GenerateCode(requirements);
+            
+            if (result.IsSuccess && result.Data != null)
+            {
+                GeneratedCode = result.Data.Code;
+            }
+            else
+            {
+                ErrorMessage = result.ErrorMessage ?? "Failed to generate code.";
+            }
         }
         catch (Exception ex)
         {

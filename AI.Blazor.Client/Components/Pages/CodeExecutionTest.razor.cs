@@ -1,7 +1,6 @@
 using AI.Shared.Services.CodeExecution;
 using AI.Shared.Services.CodeExecution.Models;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 
 namespace AI.Blazor.Client.Components.Pages;
 
