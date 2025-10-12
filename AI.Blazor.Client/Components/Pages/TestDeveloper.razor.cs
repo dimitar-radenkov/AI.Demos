@@ -101,13 +101,10 @@ public partial class TestDeveloper : ComponentBase
     /// </summary>
     protected void LoadExampleSimple()
     {
-        Requirements = new Requirements
-        {
-            Task = "Create a function that adds two numbers together",
-            Inputs = ["Two integer numbers"],
-            Outputs = ["The sum of the two numbers"],
-            Constraints = ["Use C# 13 features", "Include input validation", "Return an integer result"]
-        };
+        TaskText = "Create a function that adds two numbers together";
+        InputsText = "Two integer numbers";
+        OutputsText = "The sum of the two numbers";
+        ConstraintsText = "Use C# 13 features\nInclude input validation\nReturn an integer result";
         CodeResult = null;
     }
 
@@ -116,13 +113,10 @@ public partial class TestDeveloper : ComponentBase
     /// </summary>
     protected void LoadExampleGreeting()
     {
-        Requirements = new Requirements
-        {
-            Task = "Write a program that greets a user by name",
-            Inputs = ["User's name as a string"],
-            Outputs = ["A personalized greeting message"],
-            Constraints = ["Handle empty or null names gracefully", "Use string interpolation", "Keep it simple and readable"]
-        };
+        TaskText = "Write a program that greets a user by name";
+        InputsText = "User's name as a string";
+        OutputsText = "A personalized greeting message";
+        ConstraintsText = "Handle empty or null names gracefully\nUse string interpolation\nKeep it simple and readable";
         CodeResult = null;
     }
 
@@ -131,13 +125,10 @@ public partial class TestDeveloper : ComponentBase
     /// </summary>
     protected void LoadExampleValidation()
     {
-        Requirements = new Requirements
-        {
-            Task = "Make a function that checks if an email address is valid",
-            Inputs = ["Email address as a string"],
-            Outputs = ["Boolean indicating if the email is valid"],
-            Constraints = ["Use regular expressions", "Follow common email validation rules", "Return false for null/empty input"]
-        };
+        TaskText = "Make a function that checks if an email address is valid";
+        InputsText = "Email address as a string";
+        OutputsText = "Boolean indicating if the email is valid";
+        ConstraintsText = "Use regular expressions\nFollow common email validation rules\nReturn false for null/empty input";
         CodeResult = null;
     }
 
@@ -146,13 +137,10 @@ public partial class TestDeveloper : ComponentBase
     /// </summary>
     protected void LoadExampleTodo()
     {
-        Requirements = new Requirements
-        {
-            Task = "Build a todo list that lets users add tasks and mark them as complete",
-            Inputs = ["Task descriptions to add", "Task IDs to mark complete"],
-            Outputs = ["List of current tasks with completion status"],
-            Constraints = ["Use a collection to store tasks", "Each task should have an ID and description", "Support adding and completing tasks"]
-        };
+        TaskText = "Build a todo list that lets users add tasks and mark them as complete";
+        InputsText = "Task descriptions to add\nTask IDs to mark complete";
+        OutputsText = "List of current tasks with completion status";
+        ConstraintsText = "Use a collection to store tasks\nEach task should have an ID and description\nSupport adding and completing tasks";
         CodeResult = null;
     }
 
@@ -161,13 +149,10 @@ public partial class TestDeveloper : ComponentBase
     /// </summary>
     protected void LoadExampleConverter()
     {
-        Requirements = new Requirements
-        {
-            Task = "Create a temperature converter that changes Celsius to Fahrenheit",
-            Inputs = ["Temperature in Celsius (double)"],
-            Outputs = ["Temperature in Fahrenheit (double)"],
-            Constraints = ["Use the formula: F = C × 9/5 + 32", "Handle decimal precision appropriately", "Include input validation"]
-        };
+        TaskText = "Create a temperature converter that changes Celsius to Fahrenheit";
+        InputsText = "Temperature in Celsius (double)";
+        OutputsText = "Temperature in Fahrenheit (double)";
+        ConstraintsText = "Use the formula: F = C × 9/5 + 32\nHandle decimal precision appropriately\nInclude input validation";
         CodeResult = null;
     }
 
@@ -176,13 +161,10 @@ public partial class TestDeveloper : ComponentBase
     /// </summary>
     protected void LoadExampleCounter()
     {
-        Requirements = new Requirements
-        {
-            Task = "Write a program that reads a text file and counts the words",
-            Inputs = ["File path as a string"],
-            Outputs = ["Word count as an integer"],
-            Constraints = ["Handle file not found errors", "Split on whitespace and punctuation", "Return 0 for empty files"]
-        };
+        TaskText = "Write a program that reads a text file and counts the words";
+        InputsText = "File path as a string";
+        OutputsText = "Word count as an integer";
+        ConstraintsText = "Handle file not found errors\nSplit on whitespace and punctuation\nReturn 0 for empty files";
         CodeResult = null;
     }
 }
