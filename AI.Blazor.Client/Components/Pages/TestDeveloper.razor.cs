@@ -83,7 +83,7 @@ public partial class TestDeveloper : ComponentBase
 
         try
         {
-            CodeResult = await DeveloperAgent.GenerateCodeAsync(Requirements);
+            CodeResult = await DeveloperAgent.GenerateCode(Requirements);
         }
         catch (Exception ex)
         {

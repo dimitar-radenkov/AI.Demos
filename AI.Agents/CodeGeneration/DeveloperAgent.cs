@@ -33,7 +33,7 @@ public sealed partial class DeveloperAgent : IDeveloperAgent
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<CodeArtifactResult> GenerateCodeAsync(
+    public async Task<CodeArtifactResult> GenerateCode(
         Requirements requirements,
         CancellationToken cancellationToken = default)
     {

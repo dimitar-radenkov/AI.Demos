@@ -32,7 +32,7 @@ public sealed partial class QueryAnalystAgent : IQueryAnalystAgent
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<RequirementsResult> AnalyzeRequestAsync(
+    public async Task<RequirementsResult> AnalyzeRequest(
         string userRequest,
         CancellationToken cancellationToken = default)
     {

@@ -41,7 +41,7 @@ public partial class TestQueryAnalyst : ComponentBase
 
         try
         {
-            AnalysisResult = await QueryAnalystAgent.AnalyzeRequestAsync(UserRequest);
+            AnalysisResult = await QueryAnalystAgent.AnalyzeRequest(UserRequest);
         }
         catch (Exception ex)
         {
