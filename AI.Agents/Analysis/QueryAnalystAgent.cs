@@ -57,7 +57,7 @@ public sealed partial class QueryAnalystAgent : IQueryAnalystAgent
             var response = await this.agent.RunAsync(userRequest, this.agentThread, cancellationToken: cancellationToken);
 
             // Parse the structured JSON response directly
-            var requirements = JsonSerializer.Deserialize<Requirements>(response.Text);
+            var requirements = JsonSerializer.Deserialize<Requirements>(response.Text, JsonSerializerOptions.Default);
 
             return requirements is null
                 ? RequirementsResult.Failure("Failed to parse requirements from agent response")
