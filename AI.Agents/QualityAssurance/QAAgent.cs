@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using OpenAI;
 using System.ClientModel;
 using System.Diagnostics;
-using System.Text.Json;
 
 namespace AI.Agents.QualityAssurance;
 
@@ -26,9 +25,6 @@ public sealed partial class QAAgent : IQAAgent
 
         var qaSettings = agentsSettings.Value.QA;
 
-        // Create JSON schema for structured output
-        var schema = AIJsonUtilities.CreateJsonSchema(typeof(CodeQuality));
-
         var openAIClient = new OpenAIClient(
             new ApiKeyCredential(qaSettings.ApiKey),
             new OpenAIClientOptions
@@ -38,11 +34,6 @@ public sealed partial class QAAgent : IQAAgent
 
         var chatOptions = new ChatOptions
         {
-            //This is OpenAI specific limitation, adjust if you use another provider
-            //ResponseFormat = ChatResponseFormatJson.ForJsonSchema(
-            //    schema: schema,
-            //    schemaName: "CodeQuality",
-            //    schemaDescription: "Code quality assessment with validation, execution results, and AI recommendations"),
             Tools =
             [
                 AIFunctionFactory.Create(qaPlugin.ValidateCode),
