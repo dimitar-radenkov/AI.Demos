@@ -38,6 +38,7 @@ public sealed partial class QAAgent : IQAAgent
 
         var chatOptions = new ChatOptions
         {
+            //This is OpenAI specific limitation, adjust if you use another provider
             //ResponseFormat = ChatResponseFormatJson.ForJsonSchema(
             //    schema: schema,
             //    schemaName: "CodeQuality",
@@ -76,29 +77,10 @@ public sealed partial class QAAgent : IQAAgent
             var prompt = $"Analyze and test this C# code using ValidateCode and ExecuteCode tools, then provide your CodeQuality assessment:\n\n{artifact.Code}";
 
             var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
-            var quality = response.Deserialize<CodeQuality>(JsonSerializerOptions.Web);
 
             stopwatch.Stop();
 
-            this.logger.LogInformation(
-                "QA Review: Approved={Approved}, Validation={ValidationStatus}, Execution={ExecutionStatus}",
-                quality.AiApproved,
-                quality.ValidationStatus,
-                quality.ExecutionStatus);
-
-            // Update ExecutionTime from stopwatch
-            var result = new CodeQuality
-            {
-                ValidationStatus = quality.ValidationStatus,
-                ExecutionStatus = quality.ExecutionStatus,
-                Output = quality.Output,
-                Errors = quality.Errors,
-                ExecutionTime = stopwatch.Elapsed,
-                AiRecommendations = quality.AiRecommendations,
-                AiApproved = quality.AiApproved
-            };
-
-            return CodeQualityResult.Success(result);
+            return CodeQualityResult.Success(new CodeQuality { Result = response.Text, Duration = stopwatch.Elapsed});
         }
         catch (Exception ex)
         {

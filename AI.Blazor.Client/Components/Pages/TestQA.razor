@@ -85,74 +85,17 @@
                     var quality = TestResult.Data;
                     
                     <div class="result-header">
-                        <h5>
-                            @if (quality.IsSuccessful)
-                            {
-                                <span>✅ Quality Check Passed</span>
-                            }
-                            else
-                            {
-                                <span>❌ Quality Check Failed</span>
-                            }
-                        </h5>
+                        <h5>✅ QA Agent Response</h5>
                         <div class="status-badges">
-                            <span class="badge @GetValidationStatusClass(quality.ValidationStatus)">
-                                Validation: @quality.ValidationStatus
-                            </span>
-                            <span class="badge @GetExecutionStatusClass(quality.ExecutionStatus)">
-                                Execution: @quality.ExecutionStatus
-                            </span>
                             <span class="badge bg-info">
-                                Time: @quality.ExecutionTime.TotalMilliseconds.ToString("F2")ms
+                                Duration: @quality.Duration.TotalMilliseconds.ToString("F2")ms
                             </span>
                         </div>
                     </div>
 
-                    @if (!string.IsNullOrEmpty(quality.Output))
-                    {
-                        <div class="output-section">
-                            <h6>📤 Output</h6>
-                            <pre class="output-block">@quality.Output</pre>
-                        </div>
-                    }
-
-                    @if (quality.Errors.Any())
-                    {
-                        <div class="errors-section">
-                            <h6>⚠️ Errors</h6>
-                            <ul class="error-list">
-                                @foreach (var error in quality.Errors)
-                                {
-                                    <li>@error</li>
-                                }
-                            </ul>
-                        </div>
-                    }
-
                     <div class="ai-feedback-section">
                         <h6>🤖 AI Analysis</h6>
-                        <div class="ai-status">
-                            @if (quality.AiApproved)
-                            {
-                                <span class="badge bg-success">✅ AI Approved</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">❌ AI Rejected</span>
-                            }
-                        </div>
-                        @if (quality.AiRecommendations.Any())
-                        {
-                            <div class="recommendations-list">
-                                <strong>Recommendations:</strong>
-                                <ul>
-                                    @foreach (var recommendation in quality.AiRecommendations)
-                                    {
-                                        <li>@recommendation</li>
-                                    }
-                                </ul>
-                            </div>
-                        }
+                        <pre class="output-block">@quality.Result</pre>
                     </div>
                 }
                 else

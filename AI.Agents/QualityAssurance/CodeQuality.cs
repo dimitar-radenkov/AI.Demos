@@ -23,28 +23,8 @@ public enum CodeExecutionStatus
 
 public sealed class CodeQuality
 {
-    [JsonPropertyName("validation_status")]
-    public required CodeValidationStatus ValidationStatus { get; init; }
-    
-    [JsonPropertyName("execution_status")]
-    public required CodeExecutionStatus ExecutionStatus { get; init; }
-    
-    [JsonPropertyName("output")]
-    public required string Output { get; init; }
-    
-    [JsonPropertyName("errors")]
-    public required string[] Errors { get; init; }
-    
-    [JsonPropertyName("execution_time")]
-    public required TimeSpan ExecutionTime { get; init; }
-    
-    [JsonPropertyName("ai_recommendations")]
-    public string[] AiRecommendations { get; init; } = [];
-    
-    [JsonPropertyName("ai_approved")]
-    public bool AiApproved { get; init; } = true;
-
-    public bool IsSuccessful => ValidationStatus == CodeValidationStatus.Passed && ExecutionStatus == CodeExecutionStatus.Success;
+    public required string Result { get; init; }
+    public required TimeSpan Duration { get; init; }
 }
 
 public sealed record CodeQualityResult : OperationResult<CodeQuality, CodeQualityResult>;

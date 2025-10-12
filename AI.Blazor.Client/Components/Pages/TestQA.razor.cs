@@ -84,42 +84,12 @@ public partial class TestQA : ComponentBase
     /// </summary>
     protected string GetResultClass()
     {
-        if (TestResult?.IsSuccess == true && TestResult.Data?.IsSuccessful == true)
+        if (TestResult?.IsSuccess == true)
         {
             return "result-success";
         }
 
         return "result-error";
-    }
-
-    /// <summary>
-    /// Gets the CSS class for validation status badge.
-    /// </summary>
-    protected string GetValidationStatusClass(CodeValidationStatus status)
-    {
-        return status switch
-        {
-            CodeValidationStatus.Passed => "bg-success",
-            CodeValidationStatus.Failed => "bg-danger",
-            CodeValidationStatus.Skipped => "bg-secondary",
-            _ => "bg-secondary"
-        };
-    }
-
-    /// <summary>
-    /// Gets the CSS class for execution status badge.
-    /// </summary>
-    protected string GetExecutionStatusClass(CodeExecutionStatus status)
-    {
-        return status switch
-        {
-            CodeExecutionStatus.Success => "bg-success",
-            CodeExecutionStatus.Failed => "bg-danger",
-            CodeExecutionStatus.Rejected => "bg-warning",
-            CodeExecutionStatus.NotExecuted => "bg-secondary",
-            CodeExecutionStatus.Timeout => "bg-warning",
-            _ => "bg-secondary"
-        };
     }
 
     #region Example Code Snippets
