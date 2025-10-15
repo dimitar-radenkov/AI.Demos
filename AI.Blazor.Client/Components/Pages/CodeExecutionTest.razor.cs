@@ -1,5 +1,5 @@
-using AI.Shared.Services.CodeExecution;
-using AI.Shared.Services.CodeExecution.Models;
+using AI.Services.CodeExecution;
+using AI.Services.CodeExecution.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace AI.Blazor.Client.Components.Pages;

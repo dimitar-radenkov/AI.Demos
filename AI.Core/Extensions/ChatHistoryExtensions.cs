@@ -1,6 +1,6 @@
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace AI.Shared.Extensions;
+namespace AI.Core.Extensions;
 
 public static class ChatHistoryExtensions
 {

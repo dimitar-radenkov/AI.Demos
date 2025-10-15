@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using AI.Shared.Infrastructure;
+using AI.Core.Infrastructure;
 
 namespace AI.Agents.QualityAssurance;
 

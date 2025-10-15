@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Microsoft.SemanticKernel;
 
-namespace AI.Shared.Plugins;
+namespace AI.Services.Plugins;
 
 public sealed class CalculatorPlugin
 {

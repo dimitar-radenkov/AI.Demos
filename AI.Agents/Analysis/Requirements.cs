@@ -1,4 +1,4 @@
-using AI.Shared.Infrastructure;
+using AI.Core.Infrastructure;
 
 namespace AI.Agents.Analysis;
 

@@ -1,9 +1,9 @@
-namespace AI.Shared.Settings.Agents;
+namespace AI.Core.Settings;
 
 public sealed class CodeExecutionSettings
 {
     public const string SectionName = "CodeExecutionSettings";
-    
+
     public required int MaxExecutionTimeSeconds { get; init; }
     public required int MaxConcurrentExecutions { get; init; }
     public required string[] AllowedNamespaces { get; init; }

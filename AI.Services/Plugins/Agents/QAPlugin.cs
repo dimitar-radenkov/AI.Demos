@@ -1,8 +1,8 @@
 using System.ComponentModel;
-using AI.Shared.Services.CodeExecution;
+using AI.Services.CodeExecution;
 using Microsoft.Extensions.Logging;
 
-namespace AI.Agents.QualityAssurance;
+namespace AI.Services.Plugins.Agents;
 
 public sealed class QAPlugin
 {
@@ -22,7 +22,7 @@ public sealed class QAPlugin
         this.logger.LogInformation("Tool: ValidateCode called with {Length} characters", code?.Length ?? 0);
 
         var result = await this.codeExecutionService.ValidateCode(code);
-        
+
         if (result.IsSuccess)
         {
             return "success";
@@ -38,7 +38,7 @@ public sealed class QAPlugin
         this.logger.LogInformation("Tool: ExecuteCode called with {Length} characters", code?.Length ?? 0);
 
         var result = await this.codeExecutionService.ExecuteCode(code, CancellationToken.None);
-        
+
         if (result.IsSuccess && result.Data != null)
         {
             var output = result.Data.ReturnValue?.ToString() ?? "(no output)";

@@ -1,6 +1,6 @@
-using AI.Shared.Services.CodeExecution.Models;
+using AI.Services.CodeExecution.Models;
 
-namespace AI.Shared.Services.CodeExecution;
+namespace AI.Services.CodeExecution;
 
 /// <summary>
 /// Service for dynamic C# code compilation and execution using Roslyn.

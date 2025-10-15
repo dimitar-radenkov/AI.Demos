@@ -1,5 +1,5 @@
-using AI.Shared.Services.CodeExecution.Models;
-using AI.Shared.Settings.Agents;
+using AI.Services.CodeExecution.Models;
+using AI.Core.Settings;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace AI.Shared.Services.CodeExecution;
+namespace AI.Services.CodeExecution;
 
 public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
 {
@@ -38,7 +38,7 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
             config.MaxExecutionTimeSeconds,
             config.MaxConcurrentExecutions);
     }
-    
+
     private static ScriptOptions BuildScriptOptions(CodeExecutionSettings config)
     {
         var options = ScriptOptions.Default;
@@ -63,7 +63,7 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
 
         return options;
     }
-    
+
     public async Task<ExecutionResult> ExecuteCode(
         string code,
         CancellationToken cancellationToken = default)
@@ -85,9 +85,9 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
             Script<object>? script = null;
             if (this.enableCaching)
             {
-                script = this.scriptCache.GetOrAdd(code, _ => 
+                script = this.scriptCache.GetOrAdd(code, _ =>
                     CSharpScript.Create<object>(code, this.scriptOptions));
-                
+
                 // Manage cache size
                 if (this.scriptCache.Count > this.maxCacheSize)
                 {
@@ -104,7 +104,7 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
             var scriptResult = await script.RunAsync(cancellationToken: cts.Token);
             stopwatch.Stop();
 
-            this.logger.LogInformation("Code executed successfully in {Duration}ms", 
+            this.logger.LogInformation("Code executed successfully in {Duration}ms",
                 stopwatch.ElapsedMilliseconds);
 
             var result = new ExecutionDto
@@ -139,7 +139,7 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
             this.semaphore.Release();
         }
     }
-    
+
     public async Task<ValidationResult> ValidateCode(string code)
     {
         if (string.IsNullOrWhiteSpace(code))

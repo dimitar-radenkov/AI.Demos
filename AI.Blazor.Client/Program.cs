@@ -1,16 +1,16 @@
+using AI.Agents;
 using AI.Agents.CodeGeneration;
 using AI.Agents.Analysis;
 using AI.Agents.QualityAssurance;
-using AI.Shared.Services.CodeExecution;
+using AI.Services.CodeExecution;
+using AI.Services.Plugins.Agents;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
 using AI.Blazor.Client.Services.Markdown;
 using AI.Blazor.Client.Services.Welcome;
-using AI.Shared.Plugins;
-using AI.Shared.Settings;
+using AI.Core.Settings;
+using AI.Core.Settings.Agents;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Plugins.Core;
-using AI.Shared.Settings.Agents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +25,12 @@ builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(File
 builder.Services.Configure<AgentsSettings>(builder.Configuration.GetSection(AgentsSettings.SectionName));
 builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSection(CodeExecutionSettings.SectionName));
 
-// Register the .NET code generation agent
-builder.Services.AddScoped<IDeveloperAgent, DeveloperAgent>();
-builder.Services.AddScoped<IQueryAnalystAgent, QueryAnalystAgent>();
-builder.Services.AddScoped<IQAAgent, QAAgent>();
+// Register AI agents
+builder.Services.AddScoped<IAgent<Requirements, CodeArtifactResult>, DeveloperAgent>();
+builder.Services.AddScoped<IAgent<string, RequirementsResult>, QueryAnalystAgent>();
+builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>, QAAgent>();
+
+// Register AI plugins and services
 builder.Services.AddScoped<QAPlugin>();
 builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 
@@ -40,10 +42,9 @@ kernelBuilder.AddOpenAIChatCompletion(
     apiKey: llmOptions.ApiKey,
     endpoint: new Uri($"{llmOptions.BaseUrl}/v1"));
 
-kernelBuilder.Plugins.AddFromType<AI.Shared.Plugins.TimePlugin>();
-kernelBuilder.Plugins.AddFromType<FileManagementPlugin>();
-kernelBuilder.Plugins.AddFromType<FileIOPlugin>();
-kernelBuilder.Plugins.AddFromType<CalculatorPlugin>();
+kernelBuilder.Plugins.AddFromType<AI.Services.Plugins.TimePlugin>();
+kernelBuilder.Plugins.AddFromType<AI.Services.Plugins.FileManagementPlugin>();
+kernelBuilder.Plugins.AddFromType<AI.Services.Plugins.CalculatorPlugin>();
 
 // Register application services
 builder.Services.AddSingleton(TimeProvider.System);

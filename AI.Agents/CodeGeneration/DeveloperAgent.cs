@@ -1,5 +1,5 @@
 using AI.Agents.Analysis;
-using AI.Shared.Settings.Agents;
+using AI.Core.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
 using OpenAI;
@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace AI.Agents.CodeGeneration;
 
-public sealed partial class DeveloperAgent : IDeveloperAgent
+public sealed partial class DeveloperAgent : IAgent<Requirements, CodeArtifactResult>
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
@@ -33,7 +33,7 @@ public sealed partial class DeveloperAgent : IDeveloperAgent
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<CodeArtifactResult> GenerateCode(
+    public async Task<CodeArtifactResult> ExecuteAsync(
         Requirements requirements,
         CancellationToken cancellationToken = default)
     {

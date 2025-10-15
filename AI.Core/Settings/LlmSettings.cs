@@ -1,4 +1,4 @@
-﻿namespace AI.Shared.Settings;
+namespace AI.Core.Settings;
 
 public sealed class LlmSettings
 {

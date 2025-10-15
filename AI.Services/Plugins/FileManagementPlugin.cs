@@ -1,9 +1,9 @@
-using AI.Shared.Settings;
+using AI.Core.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
-namespace AI.Shared.Plugins;
+namespace AI.Services.Plugins;
 
 public sealed class FileManagementPlugin
 {

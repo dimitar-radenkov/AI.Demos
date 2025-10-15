@@ -1,11 +1,11 @@
-namespace AI.Shared.Settings.Agents;
+namespace AI.Core.Settings.Agents;
 
-public sealed class QAAgentSettings
+public class AgentSettings
 {
     public required string Model { get; init; }
     public required string[] SystemPrompt { get; init; }
     public required string ApiKey { get; init; }
     public required string BaseUrl { get; init; }
 
-    public string GetSystemPrompt() => string.Join("\n", this.SystemPrompt);
+    public string GetSystemPrompt() => string.Join("\n", SystemPrompt);
 }

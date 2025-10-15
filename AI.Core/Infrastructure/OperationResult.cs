@@ -1,4 +1,4 @@
-﻿namespace AI.Shared.Infrastructure;
+namespace AI.Core.Infrastructure;
 
 public abstract record OperationResult<TSelf> where TSelf : OperationResult<TSelf>, new()
 {

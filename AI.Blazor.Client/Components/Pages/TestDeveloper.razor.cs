@@ -1,7 +1,7 @@
+using AI.Agents;
 using AI.Agents.Analysis;
 using AI.Agents.CodeGeneration;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 
 namespace AI.Blazor.Client.Components.Pages;
 
@@ -12,7 +12,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestDeveloper : ComponentBase
 {
     [Inject]
-    private IDeveloperAgent DeveloperAgent { get; set; } = default!;
+    private IAgent<Requirements, CodeArtifactResult> DeveloperAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestDeveloper> Logger { get; set; } = default!;
@@ -83,7 +83,7 @@ public partial class TestDeveloper : ComponentBase
 
         try
         {
-            CodeResult = await DeveloperAgent.GenerateCode(Requirements);
+            CodeResult = await DeveloperAgent.ExecuteAsync(Requirements);
         }
         catch (Exception ex)
         {

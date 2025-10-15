@@ -1,7 +1,7 @@
-﻿using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel;
 using System.ComponentModel;
 
-namespace AI.Shared.Plugins;
+namespace AI.Services.Plugins;
 
 public sealed class TimePlugin
 {
