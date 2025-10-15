@@ -14,9 +14,12 @@ public sealed partial class QueryAnalystAgent : IAgent<string, RequirementsResul
     private readonly AgentThread agentThread;
 
     public QueryAnalystAgent(IOptions<AgentsSettings> agentsSettings)
+        : this(agentsSettings.Value.QueryAnalyst)
     {
-        var settings = agentsSettings.Value.QueryAnalyst;
+    }
 
+    public QueryAnalystAgent(AgentSettings settings)
+    {
         // Create JSON schema for structured output
         var schema = AIJsonUtilities.CreateJsonSchema(typeof(Requirements));
 
@@ -29,10 +32,7 @@ public sealed partial class QueryAnalystAgent : IAgent<string, RequirementsResul
 
         var chatOptions = new ChatOptions
         {
-            ResponseFormat = ChatResponseFormatJson.ForJsonSchema(
-                schema: schema,
-                schemaName: "Requirements",
-                schemaDescription: "Structured requirements extracted from user request with task, inputs, outputs, and constraints")
+            ResponseFormat = ChatResponseFormatJson.ForJsonSchema(schema: schema)
         };
 
         this.agent = openAIClient
