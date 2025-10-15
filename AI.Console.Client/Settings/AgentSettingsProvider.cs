@@ -8,7 +8,13 @@ public static class AgentSettingsProvider
     private static string ApiKey => "not-needed";
     private static string Model => "mistralai/mistral-nemo-instruct-2407";
 
-    public static AgentSettings CreateQueryAnalystSettings()
+    public static AgentSettings CreateQueryAnalystSettings() => CreateQueryAnalystSettingsInternal();
+
+    public static AgentSettings CreateDeveloperSettings() => CreateDeveloperSettingsInternal();
+
+    public static AgentSettings CreateReviewerSettings() => CreateReviewerSettingsInternal();
+
+    private static AgentSettings CreateQueryAnalystSettingsInternal()
     {
         return new AgentSettings
         {
@@ -60,7 +66,7 @@ public static class AgentSettingsProvider
         };
     }
 
-    public static AgentSettings CreateDeveloperSettings()
+    private static AgentSettings CreateDeveloperSettingsInternal()
     {
         return new AgentSettings
         {
@@ -105,7 +111,7 @@ public static class AgentSettingsProvider
         };
     }
 
-    public static AgentSettings CreateReviewerSettings()
+    private static AgentSettings CreateReviewerSettingsInternal()
     {
         return new AgentSettings
         {

@@ -10,6 +10,7 @@ using AI.Blazor.Client.Services.Markdown;
 using AI.Blazor.Client.Services.Welcome;
 using AI.Core.Settings;
 using AI.Core.Settings.Agents;
+using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,13 +23,28 @@ builder.Services.Configure<LlmSettings>(builder.Configuration.GetSection(LlmSett
 builder.Services.Configure<ChatSettings>(builder.Configuration.GetSection(ChatSettings.SectionName));
 builder.Services.Configure<WelcomeSettings>(builder.Configuration.GetSection(WelcomeSettings.SectionName));
 builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(FileIOSettings.SectionName));
-builder.Services.Configure<AgentsSettings>(builder.Configuration.GetSection(AgentsSettings.SectionName));
 builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSection(CodeExecutionSettings.SectionName));
 
-// Register AI agents
-builder.Services.AddScoped<IAgent<Requirements, CodeArtifactResult>, DeveloperAgent>();
-builder.Services.AddScoped<IAgent<string, RequirementsResult>, QueryAnalystAgent>();
-builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>, QAAgent>();
+// Register AI agents with their specific configurations
+builder.Services.AddScoped<IAgent<Requirements, CodeArtifactResult>>(sp => 
+{
+    var options = Options.Create(builder.Configuration.GetSection("Agents:Developer").Get<AgentSettings>()!);
+    return new DeveloperAgent(options);
+});
+
+builder.Services.AddScoped<IAgent<string, RequirementsResult>>(sp => 
+{
+    var options = Options.Create(builder.Configuration.GetSection("Agents:QueryAnalyst").Get<AgentSettings>()!);
+    return new QueryAnalystAgent(options);
+});
+
+builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>>(sp => 
+{
+    var qaPlugin = sp.GetRequiredService<QAPlugin>();
+    var logger = sp.GetRequiredService<ILogger<QAAgent>>();
+    var options = Options.Create(builder.Configuration.GetSection("Agents:QA").Get<AgentSettings>()!);
+    return new QAAgent(options, qaPlugin, logger);
+});
 
 // Register AI plugins and services
 builder.Services.AddScoped<QAPlugin>();

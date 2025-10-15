@@ -13,14 +13,9 @@ public sealed partial class DeveloperAgent : IAgent<Requirements, CodeArtifactRe
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
 
-    public DeveloperAgent(IOptions<AgentsSettings> agentsSettings)
-        : this(agentsSettings.Value.Developer)
+    public DeveloperAgent(IOptions<AgentSettings> options)
     {
-    }
-
-    public DeveloperAgent(AgentSettings settings)
-    {
-
+        var settings = options.Value;
         var openAIClient = new OpenAIClient(
             new ApiKeyCredential(settings.ApiKey),
             new OpenAIClientOptions

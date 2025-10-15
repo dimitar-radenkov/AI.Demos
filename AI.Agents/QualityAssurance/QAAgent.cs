@@ -18,13 +18,12 @@ public sealed partial class QAAgent : IAgent<CodeArtifact, CodeQualityResult>
     private readonly AgentThread agentThread;
 
     public QAAgent(
-        IOptions<AgentsSettings> agentsSettings,
+        IOptions<AgentSettings> options,
         QAPlugin qaPlugin,
         ILogger<QAAgent> logger)
     {
         this.logger = logger;
-
-        var qaSettings = agentsSettings.Value.QA;
+        var qaSettings = options.Value;
 
         var openAIClient = new OpenAIClient(
             new ApiKeyCredential(qaSettings.ApiKey),

@@ -2,11 +2,12 @@ using AI.Agents.Analysis;
 using AI.Agents.CodeGeneration;
 using AI.Agents.QualityAssurance;
 using AI.Client.Settings;
+using Microsoft.Extensions.Options;
 
-// Initialize agents
-var analyst = new QueryAnalystAgent(AgentSettingsProvider.CreateQueryAnalystSettings());
-var developer = new DeveloperAgent(AgentSettingsProvider.CreateDeveloperSettings());
-var reviewer = new ReviewerAgent(AgentSettingsProvider.CreateReviewerSettings());
+// Initialize agents with IOptions
+var analyst = new QueryAnalystAgent(Options.Create(AgentSettingsProvider.CreateQueryAnalystSettings()));
+var developer = new DeveloperAgent(Options.Create(AgentSettingsProvider.CreateDeveloperSettings()));
+var reviewer = new ReviewerAgent(Options.Create(AgentSettingsProvider.CreateReviewerSettings()));
 
 var question = "what is the result of 20+20+20*10";
 Console.WriteLine($"Question: {question}\n");
