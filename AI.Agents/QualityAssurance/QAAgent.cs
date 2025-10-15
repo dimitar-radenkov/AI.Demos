@@ -1,5 +1,6 @@
 using AI.Agents.CodeGeneration;
 using AI.Core.Settings.Agents;
+using AI.Services.Plugins.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;

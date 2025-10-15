@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -7,17 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Reference to core and services libraries -->
+    <!-- Reference to core library -->
     <ProjectReference Include="..\AI.Core\AI.Core.csproj" />
-    <ProjectReference Include="..\AI.Services\AI.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Code Generation Dependencies -->
-    <PackageReference Include="Microsoft.Agents.AI.OpenAI" Version="1.0.0-preview.251002.1" />
-    <PackageReference Include="OpenAI" Version="2.5.0" />
-    
-    <!-- Common Dependencies -->
+    <!-- For Semantic Kernel plugins -->
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.65.0" />
+
+    <!-- For code execution service -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.14.0" />
+
+    <!-- Common dependencies -->
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
   </ItemGroup>

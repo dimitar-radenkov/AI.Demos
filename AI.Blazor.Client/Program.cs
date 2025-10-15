@@ -1,16 +1,17 @@
 using AI.Agents.CodeGeneration;
 using AI.Agents.Analysis;
 using AI.Agents.QualityAssurance;
-using AI.Shared.Services.CodeExecution;
+using AI.Services.CodeExecution;
+using AI.Services.Plugins;
+using AI.Services.Plugins.Agents;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
 using AI.Blazor.Client.Services.Markdown;
 using AI.Blazor.Client.Services.Welcome;
-using AI.Shared.Plugins;
-using AI.Shared.Settings;
+using AI.Core.Settings;
+using AI.Core.Settings.Agents;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Plugins.Core;
-using AI.Shared.Settings.Agents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,10 +41,9 @@ kernelBuilder.AddOpenAIChatCompletion(
     apiKey: llmOptions.ApiKey,
     endpoint: new Uri($"{llmOptions.BaseUrl}/v1"));
 
-kernelBuilder.Plugins.AddFromType<AI.Shared.Plugins.TimePlugin>();
-kernelBuilder.Plugins.AddFromType<FileManagementPlugin>();
-kernelBuilder.Plugins.AddFromType<FileIOPlugin>();
-kernelBuilder.Plugins.AddFromType<CalculatorPlugin>();
+kernelBuilder.Plugins.AddFromType<AI.Services.Plugins.TimePlugin>();
+kernelBuilder.Plugins.AddFromType<AI.Services.Plugins.FileManagementPlugin>();
+kernelBuilder.Plugins.AddFromType<AI.Services.Plugins.CalculatorPlugin>();
 
 // Register application services
 builder.Services.AddSingleton(TimeProvider.System);

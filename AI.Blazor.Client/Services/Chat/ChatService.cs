@@ -1,4 +1,4 @@
-﻿using AI.Shared.Extensions;
+﻿using AI.Core.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
