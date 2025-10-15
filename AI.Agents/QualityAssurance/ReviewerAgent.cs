@@ -15,8 +15,12 @@ public sealed partial class ReviewerAgent : IAgent<CodeArtifact, CodeReviewResul
     private readonly AgentThread agentThread;
 
     public ReviewerAgent(IOptions<AgentsSettings> agentsSettings)
+        : this(agentsSettings.Value.Reviewer)
     {
-        var settings = agentsSettings.Value.Reviewer;
+    }
+
+    public ReviewerAgent(AgentSettings settings)
+    {
 
         // Create JSON schema for structured output
         var schema = AIJsonUtilities.CreateJsonSchema(typeof(CodeReview));
