@@ -1,5 +1,5 @@
 using AI.Agents.Analysis;
-using AI.Shared.Infrastructure;
+using AI.Core.Infrastructure;
 
 namespace AI.Agents.CodeGeneration;
 

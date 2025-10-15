@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Reference to shared library -->
+    <!-- Reference to core library -->
+    <ProjectReference Include="..\AI.Core\AI.Core.csproj" />
+    <!-- Reference to shared library (temporary - will be removed later) -->
     <ProjectReference Include="..\AI.Shared\AI.Shared.csproj" />
   </ItemGroup>
 

@@ -1,7 +1,7 @@
 using AI.Agents.Analysis;
 using AI.Agents.CodeGeneration;
 using AI.Agents.QualityAssurance;
-using AI.Shared.Infrastructure;
+using AI.Core.Infrastructure;
 
 namespace AI.Agents.Pipeline.Models;
 
