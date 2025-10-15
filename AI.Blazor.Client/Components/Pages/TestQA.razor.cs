@@ -1,8 +1,8 @@
+using AI.Agents;
 using AI.Agents.Analysis;
 using AI.Agents.CodeGeneration;
 using AI.Agents.QualityAssurance;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 
 namespace AI.Blazor.Client.Components.Pages;
 
@@ -13,7 +13,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestQA : ComponentBase
 {
     [Inject]
-    private IQAAgent QAAgent { get; set; } = default!;
+    private IAgent<CodeArtifact, CodeQualityResult> QAAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestQA> Logger { get; set; } = default!;
@@ -57,7 +57,7 @@ public partial class TestQA : ComponentBase
                 }
             };
 
-            TestResult = await QAAgent.Validate(artifact);
+            TestResult = await QAAgent.ExecuteAsync(artifact);
         }
         catch (Exception ex)
         {

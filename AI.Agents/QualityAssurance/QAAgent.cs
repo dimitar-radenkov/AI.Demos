@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace AI.Agents.QualityAssurance;
 
-public sealed partial class QAAgent : IQAAgent
+public sealed partial class QAAgent : IAgent<CodeArtifact, CodeQualityResult>
 {
     private readonly ILogger<QAAgent> logger;
     private readonly AIAgent agent;
@@ -56,7 +56,7 @@ public sealed partial class QAAgent : IQAAgent
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<CodeQualityResult> Validate(CodeArtifact artifact, CancellationToken cancellationToken = default)
+    public async Task<CodeQualityResult> ExecuteAsync(CodeArtifact artifact, CancellationToken cancellationToken = default)
     {
         var stopwatch = Stopwatch.StartNew();
 

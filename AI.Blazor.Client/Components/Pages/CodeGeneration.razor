@@ -1,6 +1,7 @@
 @page "/code-generation"
 @rendermode InteractiveServer
 
+@using AI.Agents
 @using AI.Agents.CodeGeneration
 @using AI.Agents.Analysis
 
@@ -13,8 +14,8 @@
     </div>
 
     <div class="code-gen-input">
-        <textarea class="code-input" 
-                  @bind="UserRequest" 
+        <textarea class="code-input"
+                  @bind="UserRequest"
                   placeholder="Describe the code you want to generate..."></textarea>
         <button class="generate-btn" @onclick="GenerateCode" disabled="@IsGenerating">
             @if (IsGenerating)
@@ -47,7 +48,7 @@
 
 @code {
     [Inject]
-    private IDeveloperAgent CodeGenerationAgent { get; set; } = default!;
+    private IAgent<Requirements, CodeArtifactResult> CodeGenerationAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<CodeGeneration> Logger { get; set; } = default!;
@@ -80,7 +81,7 @@
                 Constraints = Array.Empty<string>()
             };
             
-            var result = await CodeGenerationAgent.GenerateCode(requirements);
+            var result = await CodeGenerationAgent.ExecuteAsync(requirements);
             
             if (result.IsSuccess && result.Data != null)
             {

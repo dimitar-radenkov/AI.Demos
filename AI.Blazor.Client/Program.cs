@@ -1,8 +1,8 @@
+using AI.Agents;
 using AI.Agents.CodeGeneration;
 using AI.Agents.Analysis;
 using AI.Agents.QualityAssurance;
 using AI.Services.CodeExecution;
-using AI.Services.Plugins;
 using AI.Services.Plugins.Agents;
 using AI.Blazor.Client.Components;
 using AI.Blazor.Client.Services.Chat;
@@ -11,7 +11,6 @@ using AI.Blazor.Client.Services.Welcome;
 using AI.Core.Settings;
 using AI.Core.Settings.Agents;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Plugins.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,10 +25,10 @@ builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(File
 builder.Services.Configure<AgentsSettings>(builder.Configuration.GetSection(AgentsSettings.SectionName));
 builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSection(CodeExecutionSettings.SectionName));
 
-// Register the .NET code generation agent
-builder.Services.AddScoped<IDeveloperAgent, DeveloperAgent>();
-builder.Services.AddScoped<IQueryAnalystAgent, QueryAnalystAgent>();
-builder.Services.AddScoped<IQAAgent, QAAgent>();
+// Register AI agents
+builder.Services.AddScoped<IAgent<Requirements, CodeArtifactResult>, DeveloperAgent>();
+builder.Services.AddScoped<IAgent<string, RequirementsResult>, QueryAnalystAgent>();
+builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>, QAAgent>();
 builder.Services.AddScoped<QAPlugin>();
 builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 

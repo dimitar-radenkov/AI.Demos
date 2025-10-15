@@ -1,6 +1,6 @@
+using AI.Agents;
 using AI.Agents.Analysis;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 
 namespace AI.Blazor.Client.Components.Pages;
 
@@ -11,7 +11,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestQueryAnalyst : ComponentBase
 {
     [Inject]
-    private IQueryAnalystAgent QueryAnalystAgent { get; set; } = default!;
+    private IAgent<string, RequirementsResult> QueryAnalystAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestQueryAnalyst> Logger { get; set; } = default!;
@@ -41,7 +41,7 @@ public partial class TestQueryAnalyst : ComponentBase
 
         try
         {
-            AnalysisResult = await QueryAnalystAgent.AnalyzeRequest(UserRequest);
+            AnalysisResult = await QueryAnalystAgent.ExecuteAsync(UserRequest);
         }
         catch (Exception ex)
         {

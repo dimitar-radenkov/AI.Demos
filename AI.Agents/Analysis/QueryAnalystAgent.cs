@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace AI.Agents.Analysis;
 
-public sealed partial class QueryAnalystAgent : IQueryAnalystAgent
+public sealed partial class QueryAnalystAgent : IAgent<string, RequirementsResult>
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
@@ -48,7 +48,7 @@ public sealed partial class QueryAnalystAgent : IQueryAnalystAgent
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<RequirementsResult> AnalyzeRequest(
+    public async Task<RequirementsResult> ExecuteAsync(
         string userRequest,
         CancellationToken cancellationToken = default)
     {
