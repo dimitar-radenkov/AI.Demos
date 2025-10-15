@@ -29,6 +29,8 @@ builder.Services.Configure<CodeExecutionSettings>(builder.Configuration.GetSecti
 builder.Services.AddScoped<IAgent<Requirements, CodeArtifactResult>, DeveloperAgent>();
 builder.Services.AddScoped<IAgent<string, RequirementsResult>, QueryAnalystAgent>();
 builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>, QAAgent>();
+
+// Register AI plugins and services
 builder.Services.AddScoped<QAPlugin>();
 builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 
