@@ -1,21 +1,32 @@
 using AI.Agents.Analysis;
+using AI.Agents.CodeGeneration;
 using AI.Client.Settings;
 
-// Question to analyze
+// Initialize agents
+var analyst = new QueryAnalystAgent(AgentSettingsProvider.CreateQueryAnalystSettings());
+var developer = new DeveloperAgent(AgentSettingsProvider.CreateDeveloperSettings());
+
 var question = "what is the result of 20+20+20*10";
+Console.WriteLine($"Question: {question}\n");
 
-// Create settings and initialize agent
-var settings = AgentSettingsProvider.CreateQueryAnalystSettings();
-var analyst = new QueryAnalystAgent(settings);
-var result = await analyst.ExecuteAsync(question);
-
-if (result.IsSuccess)
+// Analyst
+var requirementsResult = await analyst.ExecuteAsync(question);
+if (!requirementsResult.IsSuccess)
 {
-    var requirements = result.Data!;
-    Console.WriteLine($"✓ Analysis completed! \n\n {requirements}");
-}
-else
-{
-    Console.WriteLine($"✗ Analysis failed: {result.ErrorMessage}");
+    Console.WriteLine($"Error: {requirementsResult.ErrorMessage}");
+    return;
 }
 
+var requirements = requirementsResult.Data!;
+Console.WriteLine($"Task: {requirements.Task}\n");
+
+// Developer
+var codeResult = await developer.ExecuteAsync(requirements);
+if (!codeResult.IsSuccess)
+{
+    Console.WriteLine($"Error: {codeResult.ErrorMessage}");
+    return;
+}
+
+Console.WriteLine("Generated Code:");
+Console.WriteLine(codeResult.Data!.Code);

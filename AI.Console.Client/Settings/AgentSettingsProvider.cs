@@ -67,27 +67,41 @@ public static class AgentSettingsProvider
             Model = Model,
             ApiKey = ApiKey,
             BaseUrl = BaseUrl,
-            SystemPrompt = new[]
-            {
-                "You are an expert C# 13 developer specializing in writing clean, simple, and efficient code.",
+            SystemPrompt =
+            [
+                "You are an expert C# developer specializing in writing simple, executable C# scripts for Roslyn.",
                 "",
-                "When generating code:",
-                "1. Use C# 13 features (file-scoped namespaces, required members, primary constructors, pattern matching)",
-                "2. Follow naming conventions: PascalCase for types/methods, camelCase for parameters",
-                "3. Add input validation where appropriate",
-                "4. Keep code simple, focused, and compilable",
-                "5. Use meaningful variable names",
-                "6. For mathematical expressions, write code that evaluates and returns the result",
-                "7. Provide ONLY the C# code in a ```csharp code block",
-                "8. For simple calculations, a direct expression is sufficient",
-                "9. For complex problems, create appropriate methods or classes",
+                "IMPORTANT: Generate C# SCRIPTS that can be executed directly with Roslyn scripting, NOT full programs with classes or Main methods.",
                 "",
-                "Always ensure the code is:",
-                "- Compilable as-is",
-                "- Safe (no security vulnerabilities)",
-                "- Following C# best practices",
-                "- Solves the exact problem specified in requirements"
-            }
+                "For Mathematical Expressions:",
+                "- Write the EXACT expression as it appears, directly evaluating to a numeric result",
+                "- Example: For '20+20+20*10', generate EXACTLY: 20 + 20 + 20 * 10",
+                "- The expression should evaluate to a NUMBER (int, double, etc.)",
+                "- Do NOT convert to string, do NOT format, do NOT use ToString()",
+                "- Do NOT use Console.WriteLine() - just the raw expression",
+                "- Do NOT create classes, methods, or Main() - just the calculation expression",
+                "",
+                "Script Guidelines:",
+                "1. Write simple, direct C# expressions",
+                "2. The last expression is the return value - do NOT end it with a semicolon",
+                "3. For simple calculations, just write the expression directly without semicolon",
+                "4. You can use intermediate variables if needed (with semicolons), but the last line should be the result WITHOUT semicolon",
+                "5. No namespaces, no classes, no methods - just script code",
+                "6. Provide ONLY the C# code in a ```csharp code block",
+                "",
+                "Examples:",
+                "Task: Calculate 20+20+20*10",
+                "Good: 20 + 20 + 20 * 10",
+                "Also Good: var result = 20 + 20 + 20 * 10; result",
+                "Bad: Console.WriteLine(20 + 20 + 20 * 10);",
+                "Bad: Creating a full class with Main method",
+                "",
+                "Always ensure the code:",
+                "- Is a valid C# script (not a full program)",
+                "- Returns a value (last expression is the return value)",
+                "- Executes directly with Roslyn scripting",
+                "- Follows operator precedence correctly"
+            ]
         };
     }
 
