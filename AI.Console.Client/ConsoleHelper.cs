@@ -1,38 +1,38 @@
-﻿namespace AI.Client.Utils;
+﻿namespace AI.Console.Client;
 
 public static class ConsoleHelper
 {
     public static void WriteUser(string message)
     {
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.Write("User: ");
-        Console.WriteLine(message);
-        Console.WriteLine();
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Cyan;
+        System.Console.Write("User: ");
+        System.Console.WriteLine(message);
+        System.Console.WriteLine();
+        System.Console.ResetColor();
     }
 
     public static string ReadUserInput()
     {
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.Write("User: ");
-        Console.ResetColor();
-        return Console.ReadLine() ?? string.Empty;
+        System.Console.ForegroundColor = ConsoleColor.Cyan;
+        System.Console.Write("User: ");
+        System.Console.ResetColor();
+        return System.Console.ReadLine() ?? string.Empty;
     }
 
     public static void WriteWarning(string message)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"Warning: {message}");
-        Console.WriteLine();
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Yellow;
+        System.Console.WriteLine($"Warning: {message}");
+        System.Console.WriteLine();
+        System.Console.ResetColor();
     }
 
     public static void WriteAssistant(string message)
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write("Assistant: ");
-        Console.WriteLine(message);
-        Console.WriteLine();
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.Write("Assistant: ");
+        System.Console.WriteLine(message);
+        System.Console.WriteLine();
+        System.Console.ResetColor();
     }
 }

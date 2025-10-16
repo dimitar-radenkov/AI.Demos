@@ -18,4 +18,5 @@ public static class AgentConfigurationSections
     public const string QueryAnalyst = $"{AgentsPrefix}:QueryAnalyst";
     public const string QA = $"{AgentsPrefix}:QA";
     public const string Reviewer = $"{AgentsPrefix}:Reviewer";
+    public const string Presenter = $"{AgentsPrefix}:Presenter";
 }

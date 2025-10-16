@@ -1,6 +1,6 @@
 using AI.Core.Settings.Agents;
 
-namespace AI.Client.Settings;
+namespace AI.Console.Client.Settings;
 
 public static class AgentSettingsProvider
 {
@@ -8,13 +8,7 @@ public static class AgentSettingsProvider
     private static string ApiKey => "not-needed";
     private static string Model => "mistralai/mistral-nemo-instruct-2407";
 
-    public static AgentSettings CreateQueryAnalystSettings() => CreateQueryAnalystSettingsInternal();
-
-    public static AgentSettings CreateDeveloperSettings() => CreateDeveloperSettingsInternal();
-
-    public static AgentSettings CreateReviewerSettings() => CreateReviewerSettingsInternal();
-
-    private static AgentSettings CreateQueryAnalystSettingsInternal()
+    public static AgentSettings CreateQueryAnalystSettings()
     {
         return new AgentSettings
         {
@@ -66,7 +60,7 @@ public static class AgentSettingsProvider
         };
     }
 
-    private static AgentSettings CreateDeveloperSettingsInternal()
+    public static AgentSettings CreateDeveloperSettings()
     {
         return new AgentSettings
         {
@@ -111,7 +105,7 @@ public static class AgentSettingsProvider
         };
     }
 
-    private static AgentSettings CreateReviewerSettingsInternal()
+    public static AgentSettings CreateReviewerSettings()
     {
         return new AgentSettings
         {
@@ -151,6 +145,48 @@ public static class AgentSettingsProvider
                 "- Focus on whether the math/logic is correct",
                 "- Explain the expected result in your comments",
                 "- Be encouraging when code is correct"
+            ]
+        };
+    }
+
+    public static AgentSettings CreatePresenterSettings()
+    {
+        return new AgentSettings
+        {
+            Model = Model,
+            ApiKey = ApiKey,
+            BaseUrl = BaseUrl,
+            SystemPrompt =
+            [
+                "You are a friendly presentation specialist who explains code execution results clearly and concisely.",
+                "",
+                "Your task: Create a simple, user-friendly presentation of code execution results.",
+                "",
+                "Output Format (JSON):",
+                "- Summary: One clear sentence describing what the code did and what was accomplished",
+                "- FormattedResult: The result value formatted nicely (e.g., '240', '3.14 seconds', '[1, 2, 3, 4, 5]')",
+                "",
+                "Guidelines:",
+                "- Summary should connect the user's request to what actually happened",
+                "- FormattedResult should make the result easy to read and understand",
+                "- Use plain language, avoid jargon",
+                "- Include execution time context in the FormattedResult when relevant (e.g., 'Result: 240 (computed in 0.5ms)')",
+                "- For numeric results, use appropriate formatting and units",
+                "- For collections, format as readable lists or arrays",
+                "",
+                "Examples:",
+                "",
+                "User Request: 'Calculate 20+20+20*10'",
+                "Execution: ReturnValue=240, ExecutionTime=1.2ms",
+                "Output:",
+                "  Summary: 'Successfully calculated the mathematical expression 20+20+20*10'",
+                "  FormattedResult: '240 (evaluated in 1.2ms)'",
+                "",
+                "User Request: 'Get current date'",
+                "Execution: ReturnValue=2025-10-16, ExecutionTime=0.3ms",
+                "Output:",
+                "  Summary: 'Retrieved the current date successfully'",
+                "  FormattedResult: 'October 16, 2025 (executed in 0.3ms)'"
             ]
         };
     }

@@ -2,6 +2,7 @@ using AI.Agents;
 using AI.Agents.CodeGeneration;
 using AI.Agents.Analysis;
 using AI.Agents.QualityAssurance;
+using AI.Agents.Presentation;
 using AI.Blazor.Client.Components;
 using AI.Services.CodeExecution;
 using AI.Services.Plugins.Agents;
@@ -38,12 +39,18 @@ builder.Services.AddScoped<IAgent<string, RequirementsResult>>(sp =>
     return new QueryAnalystAgent(options);
 });
 
-builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>>(sp => 
+builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>>(sp =>
 {
     var qaPlugin = sp.GetRequiredService<QAPlugin>();
     var logger = sp.GetRequiredService<ILogger<QAAgent>>();
     var options = Options.Create(builder.Configuration.GetSection(AgentConfigurationSections.QA).Get<AgentSettings>()!);
     return new QAAgent(options, qaPlugin, logger);
+});
+
+builder.Services.AddScoped<IAgent<PresentationInput, PresentationResult>>(sp =>
+{
+    var options = Options.Create(builder.Configuration.GetSection(AgentConfigurationSections.Presenter).Get<AgentSettings>()!);
+    return new PresenterAgent(options);
 });
 
 // Register AI plugins and services
