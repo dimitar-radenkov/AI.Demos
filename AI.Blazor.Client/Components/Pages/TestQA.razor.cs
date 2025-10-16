@@ -38,14 +38,14 @@ public partial class TestQA : ComponentBase
     /// </summary>
     protected async Task Validate()
     {
-        TestResult = null;
-        IsTesting = true;
+        this.TestResult = null;
+        this.IsTesting = true;
 
         try
         {
             var artifact = new CodeArtifact
             {
-                Code = CodeInput,
+                Code = this.CodeInput,
                 Language = "csharp",
                 GeneratedAt = DateTime.UtcNow,
                 Requirements = new Requirements
@@ -57,16 +57,16 @@ public partial class TestQA : ComponentBase
                 }
             };
 
-            TestResult = await QAAgent.ExecuteAsync(artifact);
+            this.TestResult = await this.QAAgent.ExecuteAsync(artifact);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error testing code");
-            TestResult = CodeQualityResult.Failure($"Unexpected error: {ex.Message}");
+            this.Logger.LogError(ex, "Error testing code");
+            this.TestResult = CodeQualityResult.Failure($"Unexpected error: {ex.Message}");
         }
         finally
         {
-            IsTesting = false;
+            this.IsTesting = false;
         }
     }
 
@@ -75,8 +75,8 @@ public partial class TestQA : ComponentBase
     /// </summary>
     protected void LoadExample(string code)
     {
-        CodeInput = code;
-        TestResult = null;
+        this.CodeInput = code;
+        this.TestResult = null;
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public partial class TestQA : ComponentBase
     /// </summary>
     protected string GetResultClass()
     {
-        if (TestResult?.IsSuccess == true)
+        if (this.TestResult?.IsSuccess == true)
         {
             return "result-success";
         }
