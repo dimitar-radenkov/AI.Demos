@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace AI.Agents.QualityAssurance;
 
-public sealed partial class QAAgent : IAgent<CodeArtifact, CodeQualityResult>
+public sealed partial class QAAgent : IAgent<CodeQualityResult>
 {
     private readonly ILogger<QAAgent> logger;
     private readonly AIAgent agent;
@@ -55,12 +55,19 @@ public sealed partial class QAAgent : IAgent<CodeArtifact, CodeQualityResult>
         this.agentThread = this.agent.GetNewThread();
     }
 
-    public async Task<CodeQualityResult> ExecuteAsync(CodeArtifact artifact, CancellationToken cancellationToken = default)
+    public async Task<CodeQualityResult> ExecuteAsync(string input, CancellationToken cancellationToken = default)
     {
         var stopwatch = Stopwatch.StartNew();
 
         try
         {
+            var artifact = System.Text.Json.JsonSerializer.Deserialize<CodeArtifact>(input, System.Text.Json.JsonSerializerOptions.Default);
+            
+            if (artifact == null)
+            {
+                return CodeQualityResult.Failure("Failed to deserialize CodeArtifact from input");
+            }
+
             this.logger.LogInformation("Starting AI-powered QA validation for {CodeLength} characters", artifact.Code?.Length ?? 0);
 
             if (string.IsNullOrWhiteSpace(artifact.Code)) return CodeQualityResult.Failure("Code is empty or null");

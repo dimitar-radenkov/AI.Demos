@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace AI.Agents.Presentation;
 
-public sealed partial class PresenterAgent : IAgent<PresentationInput, PresentationResult>
+public sealed partial class PresenterAgent : IAgent<PresentationResult>
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
@@ -46,12 +46,19 @@ public sealed partial class PresenterAgent : IAgent<PresentationInput, Presentat
     }
 
     public async Task<PresentationResult> ExecuteAsync(
-        PresentationInput input,
+        string input,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            var prompt = BuildPresentationPrompt(input);
+            var presentationInput = JsonSerializer.Deserialize<PresentationInput>(input, JsonSerializerOptions.Default);
+            
+            if (presentationInput == null)
+            {
+                return PresentationResult.Failure("Failed to deserialize PresentationInput from input");
+            }
+
+            var prompt = BuildPresentationPrompt(presentationInput);
             var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
 
             // Parse the structured JSON response directly
@@ -63,7 +70,7 @@ public sealed partial class PresenterAgent : IAgent<PresentationInput, Presentat
         }
         catch (JsonException ex)
         {
-            return PresentationResult.Failure($"Failed to deserialize presentation: {ex.Message}");
+            return PresentationResult.Failure($"Failed to deserialize: {ex.Message}");
         }
         catch (Exception ex)
         {

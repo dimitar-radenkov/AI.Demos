@@ -8,9 +8,9 @@ namespace AI.Agents.Pipeline.Executors;
 public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
     IMessageHandler<Requirements, CodeArtifact>
 {
-    private readonly IAgent<Requirements, CodeArtifactResult> developerAgent;
+    private readonly IAgent<CodeArtifactResult> developerAgent;
 
-    public DeveloperExecutor(IAgent<Requirements, CodeArtifactResult> developerAgent)
+    public DeveloperExecutor(IAgent<CodeArtifactResult> developerAgent)
         : base(nameof(DeveloperExecutor))
     {
         this.developerAgent = developerAgent;
@@ -21,8 +21,9 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
+        var jsonInput = System.Text.Json.JsonSerializer.Serialize(message);
         var result = await this.developerAgent.ExecuteAsync(
-            message, 
+            jsonInput, 
             cancellationToken: cancellationToken);
 
         if (!result.IsSuccess || result.Data is null)

@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace AI.Agents.Analysis;
 
-public sealed partial class QueryAnalystAgent : IAgent<string, RequirementsResult>
+public sealed partial class QueryAnalystAgent : IAgent<RequirementsResult>
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;

@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace AI.Agents.CodeGeneration;
 
-public sealed partial class DeveloperAgent : IAgent<Requirements, CodeArtifactResult>
+public sealed partial class DeveloperAgent : IAgent<CodeArtifactResult>
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
@@ -33,29 +33,88 @@ public sealed partial class DeveloperAgent : IAgent<Requirements, CodeArtifactRe
     }
 
     public async Task<CodeArtifactResult> ExecuteAsync(
-        Requirements requirements,
+        string input,
         CancellationToken cancellationToken = default)
     {
-        var prompt = BuildCodeGenerationPrompt(requirements);
-        var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
-
-        var code = ExtractCodeFromResponse(response.Text);
-
-        var codeArtifact = new CodeArtifact
+        try
         {
-            Code = code,
-            Language = "csharp",
-            GeneratedAt = DateTime.UtcNow,
-            Requirements = requirements
-        };
+            // Try to deserialize as Requirements first, then CodeReview (for feedback loop)
+            Requirements? requirements = null;
+            string? feedbackContext = null;
 
-        return CodeArtifactResult.Success(codeArtifact);
+            try
+            {
+                requirements = System.Text.Json.JsonSerializer.Deserialize<Requirements>(input, JsonSerializerOptions.Default);
+            }
+            catch
+            {
+                // If not Requirements, try CodeReview (feedback from reviewer)
+                try
+                {
+                    var codeReview = System.Text.Json.JsonSerializer.Deserialize<QualityAssurance.CodeReview>(input, JsonSerializerOptions.Default);
+                    if (codeReview != null)
+                    {
+                        feedbackContext = $"Previous code was rejected. Review feedback:\n{codeReview.Comments}";
+                        // Extract requirements from the feedback if available
+                        requirements = new Requirements 
+                        { 
+                            Task = "Improve code based on feedback",
+                            Inputs = Array.Empty<string>(),
+                            Outputs = Array.Empty<string>(),
+                            Constraints = Array.Empty<string>()
+                        };
+                    }
+                }
+                catch
+                {
+                    // If both fail, treat input as plain text requirements
+                    requirements = new Requirements 
+                    { 
+                        Task = input,
+                        Inputs = Array.Empty<string>(),
+                        Outputs = Array.Empty<string>(),
+                        Constraints = Array.Empty<string>()
+                    };
+                }
+            }
+
+            if (requirements == null)
+            {
+                return CodeArtifactResult.Failure("Failed to parse input as Requirements or CodeReview");
+            }
+
+            var prompt = BuildCodeGenerationPrompt(requirements, feedbackContext);
+            var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
+
+            var code = ExtractCodeFromResponse(response.Text);
+
+            var codeArtifact = new CodeArtifact
+            {
+                Code = code,
+                Language = "csharp",
+                GeneratedAt = DateTime.UtcNow,
+                Requirements = requirements
+            };
+
+            return CodeArtifactResult.Success(codeArtifact);
+        }
+        catch (Exception ex)
+        {
+            return CodeArtifactResult.Failure($"Failed to generate code: {ex.Message}");
+        }
     }
 
-    private static string BuildCodeGenerationPrompt(Requirements requirements)
+    private static string BuildCodeGenerationPrompt(Requirements requirements, string? feedbackContext = null)
     {
-        var prompt = $"Generate C# code that implements the following requirements:\n\n" +
-                     $"Task: {requirements.Task}\n";
+        var prompt = string.Empty;
+        
+        if (!string.IsNullOrEmpty(feedbackContext))
+        {
+            prompt += $"{feedbackContext}\n\n";
+        }
+        
+        prompt += $"Generate C# code that implements the following requirements:\n\n" +
+                  $"Task: {requirements.Task}\n";
 
         if (requirements.Inputs.Length > 0)
         {

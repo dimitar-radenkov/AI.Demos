@@ -8,9 +8,9 @@ public sealed class AnalystExecutor :
     ReflectingExecutor<AnalystExecutor>,
     IMessageHandler<string, Requirements>
 {
-    private readonly IAgent<string, RequirementsResult> queryAnalystAgent;
+    private readonly IAgent<RequirementsResult> queryAnalystAgent;
 
-    public AnalystExecutor(IAgent<string, RequirementsResult> queryAnalystAgent)
+    public AnalystExecutor(IAgent<RequirementsResult> queryAnalystAgent)
         : base(nameof(AnalystExecutor))
     {
         this.queryAnalystAgent = queryAnalystAgent;

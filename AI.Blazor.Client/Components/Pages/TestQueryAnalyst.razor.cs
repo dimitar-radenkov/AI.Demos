@@ -11,7 +11,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestQueryAnalyst : ComponentBase
 {
     [Inject]
-    private IAgent<string, RequirementsResult> QueryAnalystAgent { get; set; } = default!;
+    private IAgent<RequirementsResult> QueryAnalystAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestQueryAnalyst> Logger { get; set; } = default!;

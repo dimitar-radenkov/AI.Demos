@@ -48,7 +48,7 @@
 
 @code {
     [Inject]
-    private IAgent<Requirements, CodeArtifactResult> CodeGenerationAgent { get; set; } = default!;
+    private IAgent<CodeArtifactResult> CodeGenerationAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<CodeGeneration> Logger { get; set; } = default!;
@@ -81,7 +81,8 @@
                 Constraints = Array.Empty<string>()
             };
             
-            var result = await CodeGenerationAgent.ExecuteAsync(requirements);
+            var jsonInput = System.Text.Json.JsonSerializer.Serialize(requirements);
+            var result = await CodeGenerationAgent.ExecuteAsync(jsonInput);
             
             if (result.IsSuccess && result.Data != null)
             {

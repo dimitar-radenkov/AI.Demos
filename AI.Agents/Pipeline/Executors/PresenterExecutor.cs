@@ -7,9 +7,9 @@ namespace AI.Agents.Pipeline.Executors;
 public sealed class PresenterExecutor : ReflectingExecutor<PresenterExecutor>,
     IMessageHandler<PresentationInput, AI.Agents.Presentation.Presentation>
 {
-    private readonly IAgent<PresentationInput, PresentationResult> codePresenterAgent;
+    private readonly IAgent<PresentationResult> codePresenterAgent;
 
-    public PresenterExecutor(IAgent<PresentationInput, PresentationResult> codePresenterAgent)
+    public PresenterExecutor(IAgent<PresentationResult> codePresenterAgent)
         : base(nameof(PresenterExecutor))
     {
         this.codePresenterAgent = codePresenterAgent;
@@ -20,8 +20,9 @@ public sealed class PresenterExecutor : ReflectingExecutor<PresenterExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
+        var jsonInput = System.Text.Json.JsonSerializer.Serialize(message);
         var result = await this.codePresenterAgent.ExecuteAsync(
-            message, 
+            jsonInput, 
             cancellationToken: cancellationToken);
 
         if (!result.IsSuccess || result.Data is null)

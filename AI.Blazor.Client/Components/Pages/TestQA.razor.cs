@@ -13,7 +13,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestQA : ComponentBase
 {
     [Inject]
-    private IAgent<CodeArtifact, CodeQualityResult> QAAgent { get; set; } = default!;
+    private IAgent<CodeQualityResult> QAAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestQA> Logger { get; set; } = default!;
@@ -57,7 +57,8 @@ public partial class TestQA : ComponentBase
                 }
             };
 
-            this.TestResult = await this.QAAgent.ExecuteAsync(artifact);
+            var jsonInput = System.Text.Json.JsonSerializer.Serialize(artifact);
+            this.TestResult = await this.QAAgent.ExecuteAsync(jsonInput);
         }
         catch (Exception ex)
         {

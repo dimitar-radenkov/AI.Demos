@@ -27,19 +27,19 @@ builder.Services.Configure<FileIOSettings>(builder.Configuration.GetSection(File
 builder.Services.Configure<ScriptRunnerSettings>(builder.Configuration.GetSection(ScriptRunnerSettings.SectionName));
 
 // Register AI agents with their specific configurations
-builder.Services.AddScoped<IAgent<Requirements, CodeArtifactResult>>(sp => 
+builder.Services.AddScoped<IAgent<CodeArtifactResult>>(sp => 
 {
     var options = Options.Create(builder.Configuration.GetSection(AgentConfigurationSections.Developer).Get<AgentSettings>()!);
     return new DeveloperAgent(options);
 });
 
-builder.Services.AddScoped<IAgent<string, RequirementsResult>>(sp => 
+builder.Services.AddScoped<IAgent<RequirementsResult>>(sp => 
 {
     var options = Options.Create(builder.Configuration.GetSection(AgentConfigurationSections.QueryAnalyst).Get<AgentSettings>()!);
     return new QueryAnalystAgent(options);
 });
 
-builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>>(sp =>
+builder.Services.AddScoped<IAgent<CodeQualityResult>>(sp =>
 {
     var qaPlugin = sp.GetRequiredService<QAPlugin>();
     var logger = sp.GetRequiredService<ILogger<QAAgent>>();
@@ -47,7 +47,7 @@ builder.Services.AddScoped<IAgent<CodeArtifact, CodeQualityResult>>(sp =>
     return new QAAgent(options, qaPlugin, logger);
 });
 
-builder.Services.AddScoped<IAgent<PresentationInput, PresentationResult>>(sp =>
+builder.Services.AddScoped<IAgent<PresentationResult>>(sp =>
 {
     var options = Options.Create(builder.Configuration.GetSection(AgentConfigurationSections.Presenter).Get<AgentSettings>()!);
     return new PresenterAgent(options);

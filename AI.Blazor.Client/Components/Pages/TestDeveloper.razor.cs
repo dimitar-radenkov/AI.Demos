@@ -12,7 +12,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestDeveloper : ComponentBase
 {
     [Inject]
-    private IAgent<Requirements, CodeArtifactResult> DeveloperAgent { get; set; } = default!;
+    private IAgent<CodeArtifactResult> DeveloperAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestDeveloper> Logger { get; set; } = default!;
@@ -83,7 +83,8 @@ public partial class TestDeveloper : ComponentBase
 
         try
         {
-            this.CodeResult = await this.DeveloperAgent.ExecuteAsync(this.Requirements);
+            var jsonInput = System.Text.Json.JsonSerializer.Serialize(this.Requirements);
+            this.CodeResult = await this.DeveloperAgent.ExecuteAsync(jsonInput);
         }
         catch (Exception ex)
         {

@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace AI.Agents.QualityAssurance;
 
-public sealed partial class ReviewerAgent : IAgent<CodeArtifact, CodeReviewResult>
+public sealed partial class ReviewerAgent : IAgent<CodeReviewResult>
 {
     private readonly AIAgent agent;
     private readonly AgentThread agentThread;
@@ -49,11 +49,18 @@ public sealed partial class ReviewerAgent : IAgent<CodeArtifact, CodeReviewResul
     }
 
     public async Task<CodeReviewResult> ExecuteAsync(
-        CodeArtifact artifact,
+        string input,
         CancellationToken cancellationToken = default)
     {
         try
         {
+            var artifact = JsonSerializer.Deserialize<CodeArtifact>(input, JsonSerializerOptions.Default);
+            
+            if (artifact == null)
+            {
+                return CodeReviewResult.Failure("Failed to deserialize CodeArtifact from input");
+            }
+
             if (string.IsNullOrWhiteSpace(artifact.Code))
             {
                 return CodeReviewResult.Failure("Code artifact is empty or null");
@@ -71,7 +78,7 @@ public sealed partial class ReviewerAgent : IAgent<CodeArtifact, CodeReviewResul
         }
         catch (JsonException ex)
         {
-            return CodeReviewResult.Failure($"Failed to deserialize code review: {ex.Message}");
+            return CodeReviewResult.Failure($"Failed to deserialize: {ex.Message}");
         }
         catch (Exception ex)
         {
