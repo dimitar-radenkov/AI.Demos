@@ -2,6 +2,8 @@
 using AI.Services.CodeExecution.Models;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Text;
 
 namespace AI.Agents.Pipeline.Executors;
@@ -10,31 +12,43 @@ public sealed class PresenterExecutor : ReflectingExecutor<PresenterExecutor>,
     IMessageHandler<ExecutionResult, AI.Agents.Presentation.Presentation>
 {
     private readonly IAgent<PresentationResult> codePresenterAgent;
+    private readonly ILogger<PresenterExecutor> logger;
 
-    public PresenterExecutor(IAgent<PresentationResult> codePresenterAgent)
+    public PresenterExecutor(
+        IAgent<PresentationResult> codePresenterAgent,
+        ILogger<PresenterExecutor> logger)
         : base(nameof(PresenterExecutor))
     {
         this.codePresenterAgent = codePresenterAgent;
+        this.logger = logger;
     }
 
     public async ValueTask<AI.Agents.Presentation.Presentation> HandleAsync(
-        ExecutionResult executionResult, 
+        ExecutionResult executionResult,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
+        logger.LogInformation("Formatting presentation");
+
         var prompt = await this.GeneratePrompt(
-            executionResult, 
-            context, 
+            executionResult,
+            context,
             cancellationToken);
 
+        var stopwatch = Stopwatch.StartNew();
         var result = await this.codePresenterAgent.ExecuteAsync(
-            prompt, 
+            prompt,
             cancellationToken: cancellationToken);
+        stopwatch.Stop();
 
         if (!result.IsSuccess || result.Data is null)
         {
+            logger.LogError("Failed to get presentation from presenter agent");
             throw new InvalidOperationException("Failed to get presentation from presenter agent.");
         }
+
+        logger.LogInformation("Presentation completed in {ElapsedSeconds:F1}s",
+            stopwatch.Elapsed.TotalSeconds);
 
         return result.Data;
     }

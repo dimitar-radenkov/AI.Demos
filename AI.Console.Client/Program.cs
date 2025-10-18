@@ -1,68 +1,48 @@
-﻿using AI.Agents.Analysis;
-using AI.Agents.CodeGeneration;
-using AI.Agents.Pipeline.Executors;
-using AI.Agents.Pipeline.Models;
-using AI.Agents.Presentation;
-using AI.Agents.QualityAssurance;
-using AI.Client.Settings;
-using AI.Console.Client.Settings;
-using AI.Services.CodeExecution;
-using AI.Services.CodeExecution.Models;
+﻿using AI.Agents.Presentation;
+using AI.Console.Client.Extensions;
+using AI.Console.Client.Factories;
 using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
-var loggerFactor = LoggerFactory.Create(builder =>
-{
-    builder.AddConsole();
-    builder.SetMinimumLevel(LogLevel.Information);
-});
+var builder = Host.CreateApplicationBuilder(args);
 
-var scriptRunner = new RoslynScriptRunner(
-    settings: Options.Create(ScriptRunnerSettingsProvider.Create()),
-    logger: loggerFactor.CreateLogger<RoslynScriptRunner>());
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-var analystAgent = new QueryAnalystAgent(Options.Create(AgentSettingsProvider.CreateQueryAnalystSettings()));
-var developerAgent = new DeveloperAgent(Options.Create(AgentSettingsProvider.CreateDeveloperSettings()));
-var reviewerAgent = new ReviewerAgent(Options.Create(AgentSettingsProvider.CreateReviewerSettings()));
-var presenterAgent = new PresenterAgent(Options.Create(AgentSettingsProvider.CreatePresenterSettings()));
+builder.Services.AddAgents();
+builder.Services.AddWorkflow();
+builder.Services.AddScriptRunner();
 
-var analystExecutor = new AnalystExecutor(analystAgent);
-var developerExecutor = new DeveloperExecutor(developerAgent);
-var reviewerExecutor = new ReviewerExecutor(reviewerAgent);
-var scriptExecutor = new ScriptExecutionExecutor(scriptRunner);
-var presenterExecutor = new PresenterExecutor(presenterAgent);
+var host = builder.Build();
+using var scope = host.Services.CreateScope();
+var workflowFactory = scope.ServiceProvider.GetRequiredService<IWorkflowFactory>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-var workflowBuilder = new WorkflowBuilder(analystExecutor);
+var workflow = workflowFactory.Create();
 
-workflowBuilder.AddEdge(analystExecutor, developerExecutor);
-workflowBuilder.AddEdge(developerExecutor, reviewerExecutor);
+var input = "What is the result of 10+10+10+10+10";
 
-workflowBuilder.AddSwitch(reviewerExecutor, sb =>
-{
-    sb.AddCase<ReviewerDecision>(d => d.CodeReview.IsApproved, scriptExecutor );
-    sb.WithDefault(developerExecutor);
-});
+var stopwatch = Stopwatch.StartNew();
+var run = await InProcessExecution.RunAsync(workflow, input);
+stopwatch.Stop();
 
-workflowBuilder.AddSwitch(scriptExecutor, sb =>
-{
-    sb.AddCase<ExecutionResult>(r => r.IsSuccess, presenterExecutor);
-    sb.WithDefault(developerExecutor);
-});
-
-var workflow = workflowBuilder.Build();
-
-var run = await InProcessExecution.RunAsync(
-    workflow,
-    "what is the result of 20+20+20*10");
-
+Console.WriteLine();
 foreach (var evt in run.NewEvents)
 {
     if (evt is ExecutorCompletedEvent completed)
     {
-        Console.WriteLine($"✅ {completed.ExecutorId} completed");
-        Console.WriteLine($"   Data: {completed.Data}");
+        if (completed.Data is Presentation presentation)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Result:");
+            Console.WriteLine($"  {presentation.Summary}");
+            Console.WriteLine($"  {presentation.FormattedResult}");
+        }
     }
 }
 
-Console.WriteLine("test");
+logger.LogInformation("Workflow completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
