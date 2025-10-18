@@ -48,13 +48,7 @@ public partial class TestQA : ComponentBase
                 Code = this.CodeInput,
                 Language = "csharp",
                 GeneratedAt = DateTime.UtcNow,
-                Requirements = new Requirements
-                {
-                    Task = "Test execution",
-                    Inputs = Array.Empty<string>(),
-                    Outputs = Array.Empty<string>(),
-                    Constraints = Array.Empty<string>()
-                }
+                Requirements = "Test Execution"
             };
 
             var jsonInput = System.Text.Json.JsonSerializer.Serialize(artifact);

@@ -36,72 +36,19 @@ public sealed partial class DeveloperAgent : IAgent<CodeArtifactResult>
         string input,
         CancellationToken cancellationToken = default)
     {
-        try
+        var response = await this.agent.RunAsync(input, this.agentThread, cancellationToken: cancellationToken);
+
+        var code = ExtractCodeFromResponse(response.Text);
+
+        var codeArtifact = new CodeArtifact
         {
-            // Try to deserialize as Requirements first, then CodeReview (for feedback loop)
-            Requirements? requirements = null;
-            string? feedbackContext = null;
+            Code = code,
+            Language = "csharp",
+            GeneratedAt = DateTime.UtcNow,
+            Requirements = input
+        };
 
-            try
-            {
-                requirements = System.Text.Json.JsonSerializer.Deserialize<Requirements>(input, JsonSerializerOptions.Default);
-            }
-            catch
-            {
-                // If not Requirements, try CodeReview (feedback from reviewer)
-                try
-                {
-                    var codeReview = System.Text.Json.JsonSerializer.Deserialize<QualityAssurance.CodeReview>(input, JsonSerializerOptions.Default);
-                    if (codeReview != null)
-                    {
-                        feedbackContext = $"Previous code was rejected. Review feedback:\n{codeReview.Comments}";
-                        // Extract requirements from the feedback if available
-                        requirements = new Requirements 
-                        { 
-                            Task = "Improve code based on feedback",
-                            Inputs = Array.Empty<string>(),
-                            Outputs = Array.Empty<string>(),
-                            Constraints = Array.Empty<string>()
-                        };
-                    }
-                }
-                catch
-                {
-                    // If both fail, treat input as plain text requirements
-                    requirements = new Requirements 
-                    { 
-                        Task = input,
-                        Inputs = Array.Empty<string>(),
-                        Outputs = Array.Empty<string>(),
-                        Constraints = Array.Empty<string>()
-                    };
-                }
-            }
-
-            if (requirements == null)
-            {
-                return CodeArtifactResult.Failure("Failed to parse input as Requirements or CodeReview");
-            }
-
-            var prompt = BuildCodeGenerationPrompt(requirements, feedbackContext);
-            var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
-
-            var code = ExtractCodeFromResponse(response.Text);
-
-            var codeArtifact = new CodeArtifact
-            {
-                Code = code,
-                Language = "csharp",
-                GeneratedAt = DateTime.UtcNow,
-                Requirements = requirements
-            };
-
-            return CodeArtifactResult.Success(codeArtifact);
-        }
-        catch (Exception ex)
-        {
-            return CodeArtifactResult.Failure($"Failed to generate code: {ex.Message}");
-        }
+        return CodeArtifactResult.Success(codeArtifact);
     }
 
     private static string BuildCodeGenerationPrompt(Requirements requirements, string? feedbackContext = null)

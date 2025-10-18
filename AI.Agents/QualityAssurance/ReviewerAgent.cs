@@ -54,20 +54,7 @@ public sealed partial class ReviewerAgent : IAgent<CodeReviewResult>
     {
         try
         {
-            var artifact = JsonSerializer.Deserialize<CodeArtifact>(input, JsonSerializerOptions.Default);
-            
-            if (artifact == null)
-            {
-                return CodeReviewResult.Failure("Failed to deserialize CodeArtifact from input");
-            }
-
-            if (string.IsNullOrWhiteSpace(artifact.Code))
-            {
-                return CodeReviewResult.Failure("Code artifact is empty or null");
-            }
-
-            var prompt = BuildReviewPrompt(artifact);
-            var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
+            var response = await this.agent.RunAsync(input, this.agentThread, cancellationToken: cancellationToken);
 
             // Parse the structured JSON response directly
             var codeReview = JsonSerializer.Deserialize<CodeReview>(response.Text, JsonSerializerOptions.Default);
@@ -84,26 +71,5 @@ public sealed partial class ReviewerAgent : IAgent<CodeReviewResult>
         {
             return CodeReviewResult.Failure($"Failed to review code: {ex.Message}");
         }
-    }
-
-    private static string BuildReviewPrompt(CodeArtifact artifact)
-    {
-        var prompt = "Review the following C# code for quality, best practices, security, and maintainability:\n\n";
-        prompt += $"```csharp\n{artifact.Code}\n```\n\n";
-
-        if (artifact.Requirements is not null)
-        {
-            prompt += $"Original Requirements:\n";
-            prompt += $"- Task: {artifact.Requirements.Task}\n";
-
-            if (artifact.Requirements.Constraints.Length > 0)
-            {
-                prompt += $"- Constraints: {string.Join(", ", artifact.Requirements.Constraints)}\n";
-            }
-        }
-
-        prompt += "\nProvide a thorough code review with your assessment.";
-
-        return prompt;
     }
 }
