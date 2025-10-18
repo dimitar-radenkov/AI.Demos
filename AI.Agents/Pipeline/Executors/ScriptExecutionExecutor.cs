@@ -1,4 +1,4 @@
-﻿using AI.Agents.CodeGeneration;
+﻿using AI.Agents.Pipeline.Models;
 using AI.Services.CodeExecution;
 using AI.Services.CodeExecution.Models;
 using Microsoft.Agents.AI.Workflows;
@@ -7,7 +7,7 @@ using Microsoft.Agents.AI.Workflows.Reflection;
 namespace AI.Agents.Pipeline.Executors;
 
 public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecutionExecutor>,
-    IMessageHandler<CodeArtifact, ExecutionResult>
+    IMessageHandler<ReviewerDecision, ExecutionResult>
 {
     private readonly IScriptRunner scriptRunner;
 
@@ -18,12 +18,12 @@ public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecution
     }
 
     public async ValueTask<ExecutionResult> HandleAsync(
-        CodeArtifact message,
+        ReviewerDecision message,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         var executionResult = await this.scriptRunner.ExecuteAsync(
-            message.Code,
+            message.ExecutableCode,
             cancellationToken);
 
         return executionResult;

@@ -1,6 +1,7 @@
 ﻿using AI.Agents.Analysis;
 using AI.Agents.CodeGeneration;
 using AI.Agents.Pipeline.Executors;
+using AI.Agents.Pipeline.Models;
 using AI.Agents.Presentation;
 using AI.Agents.QualityAssurance;
 using AI.Client.Settings;
@@ -34,39 +35,20 @@ var presenterExecutor = new PresenterExecutor(presenterAgent);
 
 var workflowBuilder = new WorkflowBuilder(analystExecutor);
 
-//analyst -> developer
 workflowBuilder.AddEdge(analystExecutor, developerExecutor);
-
-//developer -> reviewer
 workflowBuilder.AddEdge(developerExecutor, reviewerExecutor);
 
-// reviewer -> script executor (only if approved)
-workflowBuilder.AddEdge<CodeReview>(
-    source: reviewerExecutor,
-    target: scriptExecutor,
-    condition: review => review!.IsApproved
-);
+workflowBuilder.AddSwitch(reviewerExecutor, sb =>
+{
+    sb.AddCase<ReviewerDecision>(d => d.CodeReview.IsApproved, scriptExecutor );
+    sb.WithDefault(developerExecutor);
+});
 
-// reviewer -> developer (if NOT approved)
-workflowBuilder.AddEdge<CodeReview>(
-    source: reviewerExecutor,
-    target: developerExecutor,
-    condition: review => !review!.IsApproved
-);
-
-// executor -> presenter (only if execution succeeded AND returnValue is not null)
-workflowBuilder.AddEdge<ExecutionResult>(
-    source: scriptExecutor,
-    target: presenterExecutor,
-    condition: result => result.IsSuccess && result.Data?.ReturnValue is not null
-);
-
-// executor -> developer (if execution failed OR returnValue is null) - LOOP BACK
-workflowBuilder.AddEdge<ExecutionResult>(
-    source: scriptExecutor,
-    target: developerExecutor,
-    condition: result => !result.IsSuccess || result.Data?.ReturnValue is null
-);
+workflowBuilder.AddSwitch(scriptExecutor, sb =>
+{
+    sb.AddCase<ExecutionResult>(r => r.IsSuccess, presenterExecutor);
+    sb.WithDefault(developerExecutor);
+});
 
 var workflow = workflowBuilder.Build();
 

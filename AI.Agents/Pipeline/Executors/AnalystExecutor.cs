@@ -21,6 +21,8 @@ public sealed class AnalystExecutor :
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
+        await context.QueueStateUpdateAsync("OriginalQuery", message, cancellationToken);
+
         var result = await this.queryAnalystAgent.ExecuteAsync(
             message, 
             cancellationToken: cancellationToken);

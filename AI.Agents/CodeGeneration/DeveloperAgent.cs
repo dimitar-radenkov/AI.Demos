@@ -51,38 +51,6 @@ public sealed partial class DeveloperAgent : IAgent<CodeArtifactResult>
         return CodeArtifactResult.Success(codeArtifact);
     }
 
-    private static string BuildCodeGenerationPrompt(Requirements requirements, string? feedbackContext = null)
-    {
-        var prompt = string.Empty;
-        
-        if (!string.IsNullOrEmpty(feedbackContext))
-        {
-            prompt += $"{feedbackContext}\n\n";
-        }
-        
-        prompt += $"Generate C# code that implements the following requirements:\n\n" +
-                  $"Task: {requirements.Task}\n";
-
-        if (requirements.Inputs.Length > 0)
-        {
-            prompt += $"Inputs: {string.Join(", ", requirements.Inputs)}\n";
-        }
-
-        if (requirements.Outputs.Length > 0)
-        {
-            prompt += $"Outputs: {string.Join(", ", requirements.Outputs)}\n";
-        }
-
-        if (requirements.Constraints.Length > 0)
-        {
-            prompt += $"Constraints: {string.Join(", ", requirements.Constraints)}\n";
-        }
-
-        prompt += "\nProvide only the C# code implementation, properly formatted and with necessary using statements.";
-
-        return prompt;
-    }
-
     private static string ExtractCodeFromResponse(string response)
     {
         // Look for ```csharp code blocks first

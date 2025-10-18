@@ -1,4 +1,3 @@
-using AI.Agents.CodeGeneration;
 using AI.Core.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -55,9 +54,7 @@ public sealed partial class ReviewerAgent : IAgent<CodeReviewResult>
         try
         {
             var response = await this.agent.RunAsync(input, this.agentThread, cancellationToken: cancellationToken);
-
-            // Parse the structured JSON response directly
-            var codeReview = JsonSerializer.Deserialize<CodeReview>(response.Text, JsonSerializerOptions.Default);
+            var codeReview = response.Deserialize<CodeReview>(JsonSerializerOptions.Default);
 
             return codeReview is null
                 ? CodeReviewResult.Failure("Failed to parse code review from agent response")

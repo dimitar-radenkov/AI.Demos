@@ -50,21 +50,11 @@ public sealed partial class PresenterAgent : IAgent<PresentationResult>
         CancellationToken cancellationToken = default)
     {
         try
-        {
-            var presentationInput = JsonSerializer.Deserialize<PresentationInput>(input, JsonSerializerOptions.Default);
-            
-            if (presentationInput == null)
-            {
-                return PresentationResult.Failure("Failed to deserialize PresentationInput from input");
-            }
+        {         
+            var response = await this.agent.RunAsync(input, this.agentThread, cancellationToken: cancellationToken);
+            var presentation = response.Deserialize<Presentation>(JsonSerializerOptions.Default);
 
-            var prompt = BuildPresentationPrompt(presentationInput);
-            var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
-
-            // Parse the structured JSON response directly
-            var presentation = JsonSerializer.Deserialize<Presentation>(response.Text, JsonSerializerOptions.Default);
-
-            return presentation is null
+            return response is null
                 ? PresentationResult.Failure("Failed to parse presentation from agent response")
                 : PresentationResult.Success(presentation);
         }
@@ -76,17 +66,5 @@ public sealed partial class PresenterAgent : IAgent<PresentationResult>
         {
             return PresentationResult.Failure($"Failed to create presentation: {ex.Message}");
         }
-    }
-
-    private static string BuildPresentationPrompt(PresentationInput input)
-    {
-        var prompt = $"Present the code execution results in a user-friendly format.\n\n";
-        prompt += $"User Request: {input.UserRequest}\n\n";
-        prompt += "Execution Result:\n";
-        prompt += $"- Return Value: {input.ExecutionResult.ReturnValue ?? "null"}\n";
-        prompt += $"- Execution Time: {input.ExecutionResult.ExecutionTime.TotalMilliseconds}ms\n";
-        prompt += "\nProvide a clear, concise presentation with a summary and formatted result.";
-
-        return prompt;
     }
 }
