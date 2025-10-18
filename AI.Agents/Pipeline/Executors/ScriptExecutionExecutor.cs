@@ -1,6 +1,5 @@
 ﻿using AI.Agents.Pipeline.Models;
 using AI.Services.CodeExecution;
-using AI.Services.CodeExecution.Models;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.Logging;
@@ -9,7 +8,7 @@ using System.Diagnostics;
 namespace AI.Agents.Pipeline.Executors;
 
 public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecutionExecutor>,
-    IMessageHandler<ReviewerDecision, ExecutionResult>
+    IMessageHandler<ReviewArtifact, ExecutionArtifact>
 {
     private readonly IScriptRunner scriptRunner;
     private readonly ILogger<ScriptExecutionExecutor> logger;
@@ -23,16 +22,16 @@ public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecution
         this.logger = logger;
     }
 
-    public async ValueTask<ExecutionResult> HandleAsync(
-        ReviewerDecision message,
+    public async ValueTask<ExecutionArtifact> HandleAsync(
+        ReviewArtifact message,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Executing C# script ({CodeLength} characters)", message.ExecutableCode.Length);
+        logger.LogInformation("Executing C# script ('''{Code}''')", message.Code);
 
         var stopwatch = Stopwatch.StartNew();
         var executionResult = await this.scriptRunner.ExecuteAsync(
-            message.ExecutableCode,
+            message.Code,
             cancellationToken);
         stopwatch.Stop();
 
@@ -45,12 +44,12 @@ public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecution
         {
             logger.LogError("Execution failed in {ElapsedSeconds:F1}s - Error: {ErrorMessage}",
                 stopwatch.Elapsed.TotalSeconds, executionResult.ErrorMessage);
-
-            await context.SendMessageAsync(
-                new CodeExecutionErrorMessage { Errors  = executionResult.ErrorMessage!, ExecutableCode  = message.ExecutableCode },
-                cancellationToken);
         }
 
-        return executionResult;
+        return new ExecutionArtifact
+        {
+            Code = message.Code,
+            Result = executionResult
+        };
     }
 }

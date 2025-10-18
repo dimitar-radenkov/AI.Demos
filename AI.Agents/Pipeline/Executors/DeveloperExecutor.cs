@@ -11,8 +11,8 @@ namespace AI.Agents.Pipeline.Executors;
 
 public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
     IMessageHandler<Requirements, CodeArtifact>,
-    IMessageHandler<CodeDisapprovedMessage, CodeArtifact>,
-    IMessageHandler<CodeExecutionErrorMessage, CodeArtifact>
+    IMessageHandler<ReviewArtifact, CodeArtifact>,
+    IMessageHandler<ExecutionArtifact, CodeArtifact>
 {
     private readonly IAgent<CodeArtifactResult> developerAgent;
     private readonly ILogger<DeveloperExecutor> logger;
@@ -55,7 +55,7 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
     }
 
     public async ValueTask<CodeArtifact> HandleAsync(
-        CodeDisapprovedMessage message,
+        ReviewArtifact message,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
@@ -76,7 +76,7 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
     }
 
     public async ValueTask<CodeArtifact> HandleAsync(
-        CodeExecutionErrorMessage message,
+        ExecutionArtifact message,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
@@ -120,36 +120,32 @@ public static class DeveloperExecutorExtensions
         return builder.ToString();
     }
 
-    public static async Task<string> FromDisapprovedMessage(this CodeDisapprovedMessage message, IWorkflowContext context)
+    public static async Task<string> FromDisapprovedMessage(this ReviewArtifact message, IWorkflowContext context)
     {
         var originalPrompt = await context.ReadStateAsync<string>("developerPrompt");
         var feedbackPrompt = new StringBuilder();
-        feedbackPrompt.AppendLine("The following code was executed with these results:");
-        feedbackPrompt.AppendLine();
-        feedbackPrompt.AppendLine($"Execution Output: {message.Comments}");
-        feedbackPrompt.AppendLine();
 
-        feedbackPrompt.AppendLine("Based on the execution results, please improve the original code.");
-        feedbackPrompt.AppendLine();
-
-        feedbackPrompt.AppendLine("Original Developer Prompt:");
+        feedbackPrompt.AppendLine("The following code was reviewed and disapproved:");
+        feedbackPrompt.AppendLine(message.Code);
+        feedbackPrompt.AppendLine("Reviewer Feedback:");
+        feedbackPrompt.AppendLine(message.Feedback);
+        feedbackPrompt.AppendLine("Please revise the code to address the reviewer's feedback, considering the original requirements:");
         feedbackPrompt.AppendLine(originalPrompt);
 
         return feedbackPrompt.ToString();
     }
 
-    public static async Task<string> FromCodeExecutionErrorMessage(this CodeExecutionErrorMessage message, IWorkflowContext context)
+    public static async Task<string> FromCodeExecutionErrorMessage(this ExecutionArtifact message, IWorkflowContext context)
     {
         var originalPrompt = await context.ReadStateAsync<string>("developerPrompt");
         var feedbackPrompt = new StringBuilder();
-        feedbackPrompt.AppendLine("The following code was executed with these errors:");
-        feedbackPrompt.AppendLine();
-        feedbackPrompt.AppendLine($"Error Message: {message.Errors}");
-        feedbackPrompt.AppendLine();
-        feedbackPrompt.AppendLine("Based on the error message, please improve the original code.");
-        feedbackPrompt.AppendLine();
-        feedbackPrompt.AppendLine("Original Developer Prompt:");
+        feedbackPrompt.AppendLine("The following code encountered an execution error:");
+        feedbackPrompt.AppendLine(message.Code);
+        feedbackPrompt.AppendLine("Error Message:");
+        feedbackPrompt.AppendLine(message.Result.ErrorMessage ?? "No error message provided.");
+        feedbackPrompt.AppendLine("Please revise the code to fix the error, considering the original requirements:");
         feedbackPrompt.AppendLine(originalPrompt);
+
         return feedbackPrompt.ToString();
     }
 }

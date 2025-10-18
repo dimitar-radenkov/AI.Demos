@@ -1,6 +1,6 @@
 using AI.Agents.Pipeline.Executors;
 using AI.Agents.Pipeline.Models;
-using AI.Services.CodeExecution.Models;
+using AI.Agents.QualityAssurance;
 using Microsoft.Agents.AI.Workflows;
 
 namespace AI.Console.Client.Factories;
@@ -33,18 +33,18 @@ public sealed class WorkflowFactory : IWorkflowFactory
 
         builder.AddEdge(analystExecutor, developerExecutor);
         builder.AddEdge(developerExecutor, reviewerExecutor);
-        builder.AddEdge(reviewerExecutor, scriptExecutor);
-        builder.AddEdge(scriptExecutor, presenterExecutor);
 
-        //builder.AddSwitch(reviewerExecutor, sb =>
-        //{
-        //    sb.AddCase<ReviewerDecision>(d => d.CodeReview.IsApproved, scriptExecutor);
-        //});
+        builder.AddSwitch(reviewerExecutor, sb =>
+        {
+            sb.AddCase<ReviewArtifact>(d => d.IsApproved, scriptExecutor);
+            sb.AddCase<ReviewArtifact>(d => !d.IsApproved, developerExecutor);
+        });
 
-        //builder.AddSwitch(scriptExecutor, sb =>
-        //{
-        //    sb.AddCase<ExecutionResult>(r => r.IsSuccess, presenterExecutor);
-        //});
+        builder.AddSwitch(scriptExecutor, sb =>
+        {
+            sb.AddCase<ExecutionArtifact>(a => a.Result.IsSuccess, presenterExecutor);
+            sb.AddCase<ExecutionArtifact>(a => !a.Result.IsSuccess, developerExecutor);
+        });
 
         return builder.Build();
     }

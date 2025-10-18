@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace AI.Agents.Pipeline.Executors;
 
 public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
-    IMessageHandler<CodeArtifact, ReviewerDecision>
+    IMessageHandler<CodeArtifact, ReviewArtifact>
 {
     private readonly IAgent<CodeReviewResult> codeReviewerAgent;
     private readonly ILogger<ReviewerExecutor> logger;
@@ -23,7 +23,7 @@ public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
         this.logger = logger;
     }
 
-    public async ValueTask<ReviewerDecision> HandleAsync(
+    public async ValueTask<ReviewArtifact> HandleAsync(
         CodeArtifact message,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
@@ -38,25 +38,17 @@ public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
             cancellationToken: cancellationToken);
         stopwatch.Stop();
 
-        if (!agentResult.IsSuccess || agentResult.Data is null)
+        if (!agentResult.IsSuccess)
         {
             logger.LogError("Failed to get code review from reviewer agent");
             throw new InvalidOperationException("Failed to get code review from reviewer agent.");
         }
 
-        if (!agentResult.Data.IsApproved)
-        {
-            await context.SendMessageAsync(
-                new CodeDisapprovedMessage { ExecutableCode = message.Code, Comments = agentResult.Data.Comments },
-                cancellationToken);
-        }
-
-        var result = new ReviewerDecision
-        {
-            CodeReview = agentResult.Data,
-            ExecutableCode = message.Code
+        return new ReviewArtifact 
+        { 
+            Code = message.Code,
+            IsApproved = agentResult.Data!.IsApproved,
+            Feedback = agentResult.Data.Comments 
         };
-
-        return result;
     }
 }
