@@ -4,14 +4,12 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using System.ClientModel;
-using System.Text.Json;
 
 namespace AI.Agents.Presentation;
 
 public sealed partial class PresenterAgent : IAgent<PresentationResult>
 {
     private readonly AIAgent agent;
-    private readonly AgentThread agentThread;
 
     public PresenterAgent(IOptions<AgentSettings> options)
     {
@@ -41,30 +39,17 @@ public sealed partial class PresenterAgent : IAgent<PresentationResult>
                     Instructions = settings.GetSystemPrompt(),
                     ChatOptions = chatOptions
                 });
-
-        this.agentThread = this.agent.GetNewThread();
     }
 
     public async Task<PresentationResult> ExecuteAsync(
         string input,
         CancellationToken cancellationToken = default)
-    {
-        try
-        {         
-            var response = await this.agent.RunAsync(input, this.agentThread, cancellationToken: cancellationToken);
-            var presentation = response.Deserialize<Presentation>(JsonSerializerOptions.Default);
+    {                 
+        var response = await this.agent.RunAsync(input, cancellationToken: cancellationToken);
+        var presentation = response.Deserialize<Presentation>(JsonSerializerOptions.Default);
 
-            return response is null
-                ? PresentationResult.Failure("Failed to parse presentation from agent response")
-                : PresentationResult.Success(presentation);
-        }
-        catch (JsonException ex)
-        {
-            return PresentationResult.Failure($"Failed to deserialize: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            return PresentationResult.Failure($"Failed to create presentation: {ex.Message}");
-        }
+        return response is null
+            ? PresentationResult.Failure("Failed to parse presentation from agent response")
+            : PresentationResult.Success(presentation);
     }
 }

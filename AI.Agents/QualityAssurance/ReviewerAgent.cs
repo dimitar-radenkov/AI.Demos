@@ -11,7 +11,6 @@ namespace AI.Agents.QualityAssurance;
 public sealed partial class ReviewerAgent : IAgent<CodeReviewResult>
 {
     private readonly AIAgent agent;
-    private readonly AgentThread agentThread;
 
     public ReviewerAgent(IOptions<AgentSettings> options)
     {
@@ -43,8 +42,6 @@ public sealed partial class ReviewerAgent : IAgent<CodeReviewResult>
                     Instructions = settings.GetSystemPrompt(),
                     ChatOptions = chatOptions
                 });
-
-        this.agentThread = this.agent.GetNewThread();
     }
 
     public async Task<CodeReviewResult> ExecuteAsync(
@@ -53,7 +50,7 @@ public sealed partial class ReviewerAgent : IAgent<CodeReviewResult>
     {
         try
         {
-            var response = await this.agent.RunAsync(input, this.agentThread, cancellationToken: cancellationToken);
+            var response = await this.agent.RunAsync(input, cancellationToken: cancellationToken);
             var codeReview = response.Deserialize<CodeReview>(JsonSerializerOptions.Default);
 
             return codeReview is null

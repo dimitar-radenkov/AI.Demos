@@ -11,7 +11,6 @@ namespace AI.Agents.Analysis;
 public sealed partial class QueryAnalystAgent : IAgent<RequirementsResult>
 {
     private readonly AIAgent agent;
-    private readonly AgentThread agentThread;
 
     public QueryAnalystAgent(IOptions<AgentSettings> options)
     {
@@ -40,8 +39,6 @@ public sealed partial class QueryAnalystAgent : IAgent<RequirementsResult>
                     Instructions = settings.GetSystemPrompt(),
                     ChatOptions = chatOptions
                 });
-
-        this.agentThread = this.agent.GetNewThread();
     }
 
     public async Task<RequirementsResult> ExecuteAsync(
@@ -50,7 +47,7 @@ public sealed partial class QueryAnalystAgent : IAgent<RequirementsResult>
     {
         try
         {
-            var response = await this.agent.RunAsync(userRequest, this.agentThread, cancellationToken: cancellationToken);
+            var response = await this.agent.RunAsync(userRequest, cancellationToken: cancellationToken);
 
             // Parse the structured JSON response directly
             var requirements = JsonSerializer.Deserialize<Requirements>(response.Text, JsonSerializerOptions.Default);

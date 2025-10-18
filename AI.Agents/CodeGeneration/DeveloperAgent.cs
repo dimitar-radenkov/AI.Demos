@@ -1,4 +1,3 @@
-using AI.Agents.Analysis;
 using AI.Core.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
@@ -11,7 +10,6 @@ namespace AI.Agents.CodeGeneration;
 public sealed partial class DeveloperAgent : IAgent<CodeArtifactResult>
 {
     private readonly AIAgent agent;
-    private readonly AgentThread agentThread;
 
     public DeveloperAgent(IOptions<AgentSettings> options)
     {
@@ -28,15 +26,13 @@ public sealed partial class DeveloperAgent : IAgent<CodeArtifactResult>
             .CreateAIAgent(
                 name: "Developer-Agent",
                 instructions: settings.GetSystemPrompt());
-
-        this.agentThread = this.agent.GetNewThread();
     }
 
     public async Task<CodeArtifactResult> ExecuteAsync(
         string input,
         CancellationToken cancellationToken = default)
     {
-        var response = await this.agent.RunAsync(input, this.agentThread, cancellationToken: cancellationToken);
+        var response = await this.agent.RunAsync(input, cancellationToken: cancellationToken);
 
         var code = ExtractCodeFromResponse(response.Text);
 
