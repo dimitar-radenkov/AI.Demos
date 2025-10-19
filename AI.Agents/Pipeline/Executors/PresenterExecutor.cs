@@ -28,7 +28,7 @@ public sealed class PresenterExecutor : ReflectingExecutor<PresenterExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Formatting presentation");
+        this.logger.LogInformation("Formatting presentation");
 
         var prompt = await this.GeneratePrompt(
             executionResult,
@@ -43,11 +43,11 @@ public sealed class PresenterExecutor : ReflectingExecutor<PresenterExecutor>,
 
         if (!result.IsSuccess || result.Data is null)
         {
-            logger.LogError("Failed to get presentation from presenter agent");
+            this.logger.LogError("Failed to get presentation from presenter agent");
             throw new InvalidOperationException("Failed to get presentation from presenter agent.");
         }
 
-        logger.LogInformation("Presentation completed in {ElapsedSeconds:F1}s",
+        this.logger.LogInformation("Presentation completed in {ElapsedSeconds:F1}s",
             stopwatch.Elapsed.TotalSeconds);
 
         return result.Data;

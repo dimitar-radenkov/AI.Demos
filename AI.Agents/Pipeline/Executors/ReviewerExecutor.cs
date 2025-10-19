@@ -28,7 +28,7 @@ public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Starting code review");
+        this.logger.LogInformation("Starting code review");
 
         var jsonInput = System.Text.Json.JsonSerializer.Serialize(message);
 
@@ -40,7 +40,7 @@ public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
 
         if (!agentResult.IsSuccess)
         {
-            logger.LogError("Failed to get code review from reviewer agent");
+            this.logger.LogError("Failed to get code review from reviewer agent");
             throw new InvalidOperationException("Failed to get code review from reviewer agent.");
         }
 

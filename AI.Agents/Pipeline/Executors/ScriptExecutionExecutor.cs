@@ -27,7 +27,7 @@ public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecution
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Executing C# script ('''{Code}''')", message.Code);
+        this.logger.LogInformation("Executing C# script ('''{Code}''')", message.Code);
 
         var stopwatch = Stopwatch.StartNew();
         var executionResult = await this.scriptRunner.ExecuteAsync(
@@ -37,12 +37,12 @@ public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecution
 
         if (executionResult.IsSuccess)
         {
-            logger.LogInformation("Execution completed in {ElapsedSeconds:F1}s - Result: {Result}",
+            this.logger.LogInformation("Execution completed in {ElapsedSeconds:F1}s - Result: {Result}",
                 stopwatch.Elapsed.TotalSeconds, executionResult.Data);
         }
         else
         {
-            logger.LogError("Execution failed in {ElapsedSeconds:F1}s - Error: {ErrorMessage}",
+            this.logger.LogError("Execution failed in {ElapsedSeconds:F1}s - Error: {ErrorMessage}",
                 stopwatch.Elapsed.TotalSeconds, executionResult.ErrorMessage);
         }
 

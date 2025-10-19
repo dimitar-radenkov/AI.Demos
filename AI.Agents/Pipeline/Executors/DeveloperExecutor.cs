@@ -31,7 +31,7 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Generating code for task: {Task}", message.Task);
+        this.logger.LogInformation("Generating code for task: {Task}", message.Task);
 
         var developerPrompt = message.FromRequirements();
         await context.QueueStateUpdateAsync("developerPrompt", developerPrompt, cancellationToken);
@@ -44,11 +44,11 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
 
         if (!result.IsSuccess || result.Data is null)
         {
-            logger.LogError("Failed to get code artifact from developer agent");
+            this.logger.LogError("Failed to get code artifact from developer agent");
             throw new InvalidOperationException("Failed to get code artifact from developer agent.");
         }
 
-        logger.LogInformation("Code generated in {ElapsedSeconds:F1}s ({CodeLength} characters)",
+        this.logger.LogInformation("Code generated in {ElapsedSeconds:F1}s ({CodeLength} characters)",
             stopwatch.Elapsed.TotalSeconds, result.Data.Code.Length);
 
         return result.Data;
@@ -68,7 +68,7 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
 
         if (!result.IsSuccess || result.Data is null)
         {
-            logger.LogError("Failed to get code artifact from developer agent");
+            this.logger.LogError("Failed to get code artifact from developer agent");
             throw new InvalidOperationException("Failed to get code artifact from developer agent.");
         }
 
@@ -88,7 +88,7 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
 
         if (!result.IsSuccess || result.Data is null)
         {
-            logger.LogError("Failed to get code artifact from developer agent");
+            this.logger.LogError("Failed to get code artifact from developer agent");
             throw new InvalidOperationException("Failed to get code artifact from developer agent.");
         }
 

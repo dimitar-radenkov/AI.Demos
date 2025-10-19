@@ -27,7 +27,7 @@ public sealed class AnalystExecutor :
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        logger.LogInformation("Starting analysis of query: \"{Query}\"", message);
+        this.logger.LogInformation("Starting analysis of query: \"{Query}\"", message);
         await context.QueueStateUpdateAsync("OriginalQuery", message, cancellationToken);
 
         var stopwatch = Stopwatch.StartNew();
@@ -38,11 +38,11 @@ public sealed class AnalystExecutor :
 
         if (!result.IsSuccess || result.Data is null)
         {
-            logger.LogError("Failed to get requirements from analyst agent");
+            this.logger.LogError("Failed to get requirements from analyst agent");
             throw new InvalidOperationException("Failed to get requirements from analyst agent.");
         }
 
-        logger.LogInformation("Analysis completed in {ElapsedSeconds:F1}s - Task: {Task}",
+        this.logger.LogInformation("Analysis completed in {ElapsedSeconds:F1}s - Task: {Task}",
             stopwatch.Elapsed.TotalSeconds, result.Data.Task);
 
         return result.Data;

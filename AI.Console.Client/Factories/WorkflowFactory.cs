@@ -1,6 +1,5 @@
 using AI.Agents.Pipeline.Executors;
 using AI.Agents.Pipeline.Models;
-using AI.Agents.QualityAssurance;
 using Microsoft.Agents.AI.Workflows;
 
 namespace AI.Console.Client.Factories;
@@ -29,21 +28,21 @@ public sealed class WorkflowFactory : IWorkflowFactory
 
     public Workflow Create()
     {
-        var builder = new WorkflowBuilder(analystExecutor);
+        var builder = new WorkflowBuilder(this.analystExecutor);
 
-        builder.AddEdge(analystExecutor, developerExecutor);
-        builder.AddEdge(developerExecutor, reviewerExecutor);
+        builder.AddEdge(this.analystExecutor, this.developerExecutor);
+        builder.AddEdge(this.developerExecutor, this.reviewerExecutor);
 
-        builder.AddSwitch(reviewerExecutor, sb =>
+        builder.AddSwitch(this.reviewerExecutor, sb =>
         {
-            sb.AddCase<ReviewArtifact>(d => d.IsApproved, scriptExecutor);
-            sb.AddCase<ReviewArtifact>(d => !d.IsApproved, developerExecutor);
+            sb.AddCase<ReviewArtifact>(reviewArtifact => reviewArtifact!.IsApproved, this.scriptExecutor);
+            sb.AddCase<ReviewArtifact>(reviewArtifact => reviewArtifact!.IsApproved == false, this.developerExecutor);
         });
 
-        builder.AddSwitch(scriptExecutor, sb =>
+        builder.AddSwitch(this.scriptExecutor, sb =>
         {
-            sb.AddCase<ExecutionArtifact>(a => a.Result.IsSuccess, presenterExecutor);
-            sb.AddCase<ExecutionArtifact>(a => !a.Result.IsSuccess, developerExecutor);
+            sb.AddCase<ExecutionArtifact>(executionArtifact => executionArtifact!.Result.IsSuccess, this.presenterExecutor);
+            sb.AddCase<ExecutionArtifact>(executionArtifact => executionArtifact!.Result.IsSuccess == false, this.developerExecutor);
         });
 
         return builder.Build();
