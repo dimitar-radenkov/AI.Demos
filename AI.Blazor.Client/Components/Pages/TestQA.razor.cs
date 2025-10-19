@@ -13,7 +13,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestQA : ComponentBase
 {
     [Inject]
-    private IAgent<CodeArtifact, CodeQualityResult> QAAgent { get; set; } = default!;
+    private IAgent<CodeQualityResult> QAAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestQA> Logger { get; set; } = default!;
@@ -38,35 +38,30 @@ public partial class TestQA : ComponentBase
     /// </summary>
     protected async Task Validate()
     {
-        TestResult = null;
-        IsTesting = true;
+        this.TestResult = null;
+        this.IsTesting = true;
 
         try
         {
             var artifact = new CodeArtifact
             {
-                Code = CodeInput,
+                Code = this.CodeInput,
                 Language = "csharp",
                 GeneratedAt = DateTime.UtcNow,
-                Requirements = new Requirements
-                {
-                    Task = "Test execution",
-                    Inputs = Array.Empty<string>(),
-                    Outputs = Array.Empty<string>(),
-                    Constraints = Array.Empty<string>()
-                }
+                Requirements = "Test Execution"
             };
 
-            TestResult = await QAAgent.ExecuteAsync(artifact);
+            var jsonInput = System.Text.Json.JsonSerializer.Serialize(artifact);
+            this.TestResult = await this.QAAgent.ExecuteAsync(jsonInput);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error testing code");
-            TestResult = CodeQualityResult.Failure($"Unexpected error: {ex.Message}");
+            this.Logger.LogError(ex, "Error testing code");
+            this.TestResult = CodeQualityResult.Failure($"Unexpected error: {ex.Message}");
         }
         finally
         {
-            IsTesting = false;
+            this.IsTesting = false;
         }
     }
 
@@ -75,8 +70,8 @@ public partial class TestQA : ComponentBase
     /// </summary>
     protected void LoadExample(string code)
     {
-        CodeInput = code;
-        TestResult = null;
+        this.CodeInput = code;
+        this.TestResult = null;
     }
 
     /// <summary>
@@ -84,7 +79,7 @@ public partial class TestQA : ComponentBase
     /// </summary>
     protected string GetResultClass()
     {
-        if (TestResult?.IsSuccess == true)
+        if (this.TestResult?.IsSuccess == true)
         {
             return "result-success";
         }

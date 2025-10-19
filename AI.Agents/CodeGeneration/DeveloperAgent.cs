@@ -1,4 +1,3 @@
-using AI.Agents.Analysis;
 using AI.Core.Settings.Agents;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Options;
@@ -8,15 +7,13 @@ using System.Text.RegularExpressions;
 
 namespace AI.Agents.CodeGeneration;
 
-public sealed partial class DeveloperAgent : IAgent<Requirements, CodeArtifactResult>
+public sealed partial class DeveloperAgent : IAgent<CodeArtifactResult>
 {
     private readonly AIAgent agent;
-    private readonly AgentThread agentThread;
 
-    public DeveloperAgent(IOptions<AgentsSettings> agentsSettings)
+    public DeveloperAgent(IOptions<AgentSettings> options)
     {
-        var settings = agentsSettings.Value.Developer;
-
+        var settings = options.Value;
         var openAIClient = new OpenAIClient(
             new ApiKeyCredential(settings.ApiKey),
             new OpenAIClientOptions
@@ -29,16 +26,13 @@ public sealed partial class DeveloperAgent : IAgent<Requirements, CodeArtifactRe
             .CreateAIAgent(
                 name: "Developer-Agent",
                 instructions: settings.GetSystemPrompt());
-
-        this.agentThread = this.agent.GetNewThread();
     }
 
     public async Task<CodeArtifactResult> ExecuteAsync(
-        Requirements requirements,
+        string input,
         CancellationToken cancellationToken = default)
     {
-        var prompt = BuildCodeGenerationPrompt(requirements);
-        var response = await this.agent.RunAsync(prompt, this.agentThread, cancellationToken: cancellationToken);
+        var response = await this.agent.RunAsync(input, cancellationToken: cancellationToken);
 
         var code = ExtractCodeFromResponse(response.Text);
 
@@ -47,35 +41,10 @@ public sealed partial class DeveloperAgent : IAgent<Requirements, CodeArtifactRe
             Code = code,
             Language = "csharp",
             GeneratedAt = DateTime.UtcNow,
-            Requirements = requirements
+            Requirements = input
         };
 
         return CodeArtifactResult.Success(codeArtifact);
-    }
-
-    private static string BuildCodeGenerationPrompt(Requirements requirements)
-    {
-        var prompt = $"Generate C# code that implements the following requirements:\n\n" +
-                     $"Task: {requirements.Task}\n";
-
-        if (requirements.Inputs.Length > 0)
-        {
-            prompt += $"Inputs: {string.Join(", ", requirements.Inputs)}\n";
-        }
-
-        if (requirements.Outputs.Length > 0)
-        {
-            prompt += $"Outputs: {string.Join(", ", requirements.Outputs)}\n";
-        }
-
-        if (requirements.Constraints.Length > 0)
-        {
-            prompt += $"Constraints: {string.Join(", ", requirements.Constraints)}\n";
-        }
-
-        prompt += "\nProvide only the C# code implementation, properly formatted and with necessary using statements.";
-
-        return prompt;
     }
 
     private static string ExtractCodeFromResponse(string response)

@@ -6,12 +6,12 @@ namespace AI.Services.Plugins.Agents;
 
 public sealed class QAPlugin
 {
-    private readonly ICodeExecutionService codeExecutionService;
+    private readonly IScriptRunner scriptRunner;
     private readonly ILogger<QAPlugin> logger;
 
-    public QAPlugin(ICodeExecutionService codeExecutionService, ILogger<QAPlugin> logger)
+    public QAPlugin(IScriptRunner scriptRunner, ILogger<QAPlugin> logger)
     {
-        this.codeExecutionService = codeExecutionService;
+        this.scriptRunner = scriptRunner;
         this.logger = logger;
     }
 
@@ -21,7 +21,7 @@ public sealed class QAPlugin
     {
         this.logger.LogInformation("Tool: ValidateCode called with {Length} characters", code?.Length ?? 0);
 
-        var result = await this.codeExecutionService.ValidateCode(code);
+        var result = await this.scriptRunner.ValidateAsync(code);
 
         if (result.IsSuccess)
         {
@@ -37,7 +37,7 @@ public sealed class QAPlugin
     {
         this.logger.LogInformation("Tool: ExecuteCode called with {Length} characters", code?.Length ?? 0);
 
-        var result = await this.codeExecutionService.ExecuteCode(code, CancellationToken.None);
+        var result = await this.scriptRunner.ExecuteAsync(code, CancellationToken.None);
 
         if (result.IsSuccess && result.Data != null)
         {

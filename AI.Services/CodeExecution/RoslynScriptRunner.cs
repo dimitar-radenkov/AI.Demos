@@ -1,45 +1,42 @@
-using AI.Services.CodeExecution.Models;
 using AI.Core.Settings;
+using AI.Services.CodeExecution.Models;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
 namespace AI.Services.CodeExecution;
 
-public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
+/// <summary>
+/// Roslyn-based C# script runner that compiles and executes dynamic code.
+/// Provides concurrency control and execution timeout enforcement.
+/// </summary>
+public sealed class RoslynScriptRunner : IScriptRunner, IDisposable
 {
     private readonly SemaphoreSlim semaphore;
     private readonly ScriptOptions scriptOptions;
     private readonly TimeSpan maxExecutionTime;
-    private readonly bool enableCaching;
-    private readonly int maxCacheSize;
-    private readonly ConcurrentDictionary<string, Script<object>> scriptCache;
-    private readonly ILogger<CodeExecutionService> logger;
+    private readonly ILogger<RoslynScriptRunner> logger;
 
-    public CodeExecutionService(
-        IOptions<CodeExecutionSettings> settings,
-        ILogger<CodeExecutionService> logger)
+    public RoslynScriptRunner(
+        IOptions<ScriptRunnerSettings> settings,
+        ILogger<RoslynScriptRunner> logger)
     {
         var config = settings.Value;
         this.logger = logger;
-        this.enableCaching = config.EnableScriptCaching;
-        this.maxCacheSize = config.MaxCacheSize;
         this.semaphore = new SemaphoreSlim(config.MaxConcurrentExecutions);
         this.maxExecutionTime = TimeSpan.FromSeconds(config.MaxExecutionTimeSeconds);
-        this.scriptCache = new ConcurrentDictionary<string, Script<object>>();
         this.scriptOptions = BuildScriptOptions(config);
 
         this.logger.LogInformation(
-            "CodeExecutionService initialized (timeout={Timeout}s, concurrency={Concurrency})",
+            "RoslynScriptRunner initialized (timeout={Timeout}s, concurrency={Concurrency})",
             config.MaxExecutionTimeSeconds,
             config.MaxConcurrentExecutions);
     }
 
-    private static ScriptOptions BuildScriptOptions(CodeExecutionSettings config)
+    private static ScriptOptions BuildScriptOptions(ScriptRunnerSettings config)
     {
         var options = ScriptOptions.Default;
 
@@ -64,12 +61,14 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
         return options;
     }
 
-    public async Task<ExecutionResult> ExecuteCode(
+    public async Task<ExecutionResult> ExecuteAsync(
         string code,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(code))
+        {
             return ExecutionResult.Failure("Code cannot be empty");
+        }
 
         var stopwatch = Stopwatch.StartNew();
         await this.semaphore.WaitAsync(cancellationToken);
@@ -81,31 +80,11 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             cts.CancelAfter(this.maxExecutionTime);
 
-            // Get or create script
-            Script<object>? script = null;
-            if (this.enableCaching)
-            {
-                script = this.scriptCache.GetOrAdd(code, _ =>
-                    CSharpScript.Create<object>(code, this.scriptOptions));
-
-                // Manage cache size
-                if (this.scriptCache.Count > this.maxCacheSize)
-                {
-                    var keysToRemove = this.scriptCache.Keys.Take(this.maxCacheSize / 2).ToList();
-                    foreach (var key in keysToRemove)
-                        this.scriptCache.TryRemove(key, out _);
-                }
-            }
-            else
-            {
-                script = CSharpScript.Create<object>(code, this.scriptOptions);
-            }
-
+            // Create and execute script
+            var script = CSharpScript.Create<object>(code, this.scriptOptions);
             var scriptResult = await script.RunAsync(cancellationToken: cts.Token);
-            stopwatch.Stop();
 
-            this.logger.LogInformation("Code executed successfully in {Duration}ms",
-                stopwatch.ElapsedMilliseconds);
+            stopwatch.Stop();
 
             var result = new ExecutionDto
             {
@@ -125,7 +104,7 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
         catch (OperationCanceledException)
         {
             stopwatch.Stop();
-            this.logger.LogWarning("Execution timed out");
+            this.logger.LogWarning("Execution timed out after {Timeout}s", this.maxExecutionTime.TotalSeconds);
             return ExecutionResult.Failure($"Execution timed out after {this.maxExecutionTime.TotalSeconds} seconds");
         }
         catch (Exception ex)
@@ -140,10 +119,12 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
         }
     }
 
-    public async Task<ValidationResult> ValidateCode(string code)
+    public async Task<ValidationResult> ValidateAsync(string code)
     {
         if (string.IsNullOrWhiteSpace(code))
+        {
             return ValidationResult.Failure("Code cannot be empty");
+        }
 
         try
         {
@@ -159,7 +140,7 @@ public sealed class CodeExecutionService : ICodeExecutionService, IDisposable
                 ? ValidationResult.Failure(string.Join("\n", errors))
                 : ValidationResult.Success();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return ValidationResult.Failure($"Validation error: {ex.Message}");
         }

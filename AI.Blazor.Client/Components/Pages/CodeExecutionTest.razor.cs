@@ -11,7 +11,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class CodeExecutionTest : ComponentBase
 {
     [Inject]
-    private ICodeExecutionService CodeExecutionService { get; set; } = default!;
+    private IScriptRunner ScriptRunner { get; set; } = default!;
 
     [Inject]
     private ILogger<CodeExecutionTest> Logger { get; set; } = default!;
@@ -37,26 +37,26 @@ public partial class CodeExecutionTest : ComponentBase
     protected bool IsExecuting { get; set; }
 
     /// <summary>
-    /// Executes the C# code using the Code Execution Agent.
+    /// Executes the C# code using the script runner.
     /// </summary>
     protected async Task ExecuteCode()
     {
-        ExecutionResult = null;
-        ValidationResult = null;
-        IsExecuting = true;
+        this.ExecutionResult = null;
+        this.ValidationResult = null;
+        this.IsExecuting = true;
 
         try
         {
-            ExecutionResult = await CodeExecutionService.ExecuteCode(Code);
+            this.ExecutionResult = await this.ScriptRunner.ExecuteAsync(this.Code);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error executing code");
-            ExecutionResult = ExecutionResult.Failure($"Unexpected error: {ex.Message}");
+            this.Logger.LogError(ex, "Error executing code");
+            this.ExecutionResult = ExecutionResult.Failure($"Unexpected error: {ex.Message}");
         }
         finally
         {
-            IsExecuting = false;
+            this.IsExecuting = false;
         }
     }
 
@@ -65,22 +65,22 @@ public partial class CodeExecutionTest : ComponentBase
     /// </summary>
     protected async Task ValidateCode()
     {
-        ExecutionResult = null;
-        ValidationResult = null;
-        IsExecuting = true;
+        this.ExecutionResult = null;
+        this.ValidationResult = null;
+        this.IsExecuting = true;
 
         try
         {
-            ValidationResult = await CodeExecutionService.ValidateCode(Code);
+            this.ValidationResult = await this.ScriptRunner.ValidateAsync(this.Code);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error validating code");
-            ValidationResult = ValidationResult.Failure($"Validation error: {ex.Message}");
+            this.Logger.LogError(ex, "Error validating code");
+            this.ValidationResult = ValidationResult.Failure($"Validation error: {ex.Message}");
         }
         finally
         {
-            IsExecuting = false;
+            this.IsExecuting = false;
         }
     }
 
@@ -90,8 +90,8 @@ public partial class CodeExecutionTest : ComponentBase
     /// <param name="exampleCode">The example code to load.</param>
     protected void LoadExample(string exampleCode)
     {
-        Code = exampleCode;
-        ExecutionResult = null;
-        ValidationResult = null;
+        this.Code = exampleCode;
+        this.ExecutionResult = null;
+        this.ValidationResult = null;
     }
 }

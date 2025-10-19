@@ -11,7 +11,7 @@ namespace AI.Blazor.Client.Components.Pages;
 public partial class TestQueryAnalyst : ComponentBase
 {
     [Inject]
-    private IAgent<string, RequirementsResult> QueryAnalystAgent { get; set; } = default!;
+    private IAgent<RequirementsResult> QueryAnalystAgent { get; set; } = default!;
 
     [Inject]
     private ILogger<TestQueryAnalyst> Logger { get; set; } = default!;
@@ -36,21 +36,21 @@ public partial class TestQueryAnalyst : ComponentBase
     /// </summary>
     protected async Task AnalyzeRequest()
     {
-        AnalysisResult = null;
-        IsAnalyzing = true;
+        this.AnalysisResult = null;
+        this.IsAnalyzing = true;
 
         try
         {
-            AnalysisResult = await QueryAnalystAgent.ExecuteAsync(UserRequest);
+            this.AnalysisResult = await this.QueryAnalystAgent.ExecuteAsync(this.UserRequest);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error analyzing request");
-            AnalysisResult = RequirementsResult.Failure($"Unexpected error: {ex.Message}");
+            this.Logger.LogError(ex, "Error analyzing request");
+            this.AnalysisResult = RequirementsResult.Failure($"Unexpected error: {ex.Message}");
         }
         finally
         {
-            IsAnalyzing = false;
+            this.IsAnalyzing = false;
         }
     }
 
@@ -60,7 +60,7 @@ public partial class TestQueryAnalyst : ComponentBase
     /// <param name="exampleRequest">The example request to load.</param>
     protected void LoadExample(string exampleRequest)
     {
-        UserRequest = exampleRequest;
-        AnalysisResult = null;
+        this.UserRequest = exampleRequest;
+        this.AnalysisResult = null;
     }
 }

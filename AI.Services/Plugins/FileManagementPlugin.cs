@@ -19,14 +19,14 @@ public sealed class FileManagementPlugin
             throw new ArgumentException("At least one allowed folder must be configured.", nameof(options.Value.AllowedFolders));
         }
 
-        allowedFolders = options.Value.AllowedFolders;
+        this.allowedFolders = options.Value.AllowedFolders;
     }
 
     [KernelFunction("get_allowed_folders")]
     [Description("Gets the list of folders where file operations are allowed.")]
     public string GetAllowedFolders()
     {
-        return string.Join(", ", allowedFolders);
+        return string.Join(", ", this.allowedFolders);
     }
 
     [KernelFunction("check_folder_access")]
@@ -35,8 +35,8 @@ public sealed class FileManagementPlugin
     {
         try
         {
-            string normalizedPath = ValidateAndNormalizePath(folderPath);
-            bool hasAccess = IsPathAccessible(normalizedPath);
+            string normalizedPath = this.ValidateAndNormalizePath(folderPath);
+            bool hasAccess = this.IsPathAccessible(normalizedPath);
 
             return hasAccess
                 ? $"Access granted: {normalizedPath}"
@@ -54,8 +54,8 @@ public sealed class FileManagementPlugin
     {
         try
         {
-            string normalizedPath = ValidateAndNormalizePath(folderPath);
-            bool hasAccess = IsPathAccessible(normalizedPath);
+            string normalizedPath = this.ValidateAndNormalizePath(folderPath);
+            bool hasAccess = this.IsPathAccessible(normalizedPath);
 
             if (!hasAccess)
             {
@@ -124,7 +124,7 @@ public sealed class FileManagementPlugin
 
     private bool IsPathAccessible(string normalizedPath)
     {
-        return allowedFolders.Any(allowed =>
+        return this.allowedFolders.Any(allowed =>
         {
             var normalizedAllowed = Path.GetFullPath(allowed)
                 .TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
