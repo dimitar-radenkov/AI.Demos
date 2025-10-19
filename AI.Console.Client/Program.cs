@@ -1,6 +1,7 @@
 ﻿using AI.Agents.Presentation;
 using AI.Console.Client.Extensions;
 using AI.Console.Client.Factories;
+using AI.Console.Client.Logging;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,7 +11,8 @@ using System.Diagnostics;
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+builder.Logging.AddConsoleFormatter<ColoredConsoleFormatter, ColoredConsoleFormatterOptions>();
+builder.Logging.AddConsole(options => options.FormatterName = "colored");
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 builder.Services.AddAgents();
