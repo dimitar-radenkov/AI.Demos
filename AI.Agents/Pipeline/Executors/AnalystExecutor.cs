@@ -27,7 +27,8 @@ public sealed class AnalystExecutor :
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        this.logger.LogInformation("Starting analysis of query: \"{Query}\"", message);
+        this.logger.LogInformation("Starting analysis");
+        this.logger.LogInformation("  Input: \"{Query}\"", message);
         await context.QueueStateUpdateAsync("OriginalQuery", message, cancellationToken);
 
         var stopwatch = Stopwatch.StartNew();
@@ -42,8 +43,21 @@ public sealed class AnalystExecutor :
             throw new InvalidOperationException("Failed to get requirements from analyst agent.");
         }
 
-        this.logger.LogInformation("Analysis completed in {ElapsedSeconds:F1}s - Task: {Task}",
-            stopwatch.Elapsed.TotalSeconds, result.Data.Task);
+        this.logger.LogInformation("Analysis completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+        this.logger.LogInformation("  Output:");
+        this.logger.LogInformation("    Task: {Task}", result.Data.Task);
+        if (result.Data.Inputs.Length > 0)
+        {
+            this.logger.LogInformation("    Inputs: {Inputs}", string.Join(", ", result.Data.Inputs));
+        }
+        if (result.Data.Outputs.Length > 0)
+        {
+            this.logger.LogInformation("    Outputs: {Outputs}", string.Join(", ", result.Data.Outputs));
+        }
+        if (result.Data.Constraints.Length > 0)
+        {
+            this.logger.LogInformation("    Constraints: {Constraints}", string.Join(", ", result.Data.Constraints));
+        }
 
         return result.Data;
     }

@@ -1,7 +1,6 @@
 ﻿using AI.Agents.Presentation;
 using AI.Console.Client.Extensions;
 using AI.Console.Client.Factories;
-using AI.Console.Client.Logging;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,11 +9,7 @@ using System.Diagnostics;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsoleFormatter<ColoredConsoleFormatter, ColoredConsoleFormatterOptions>();
-builder.Logging.AddConsole(options => options.FormatterName = "colored");
-builder.Logging.SetMinimumLevel(LogLevel.Information);
-
+builder.Logging.AddLogging();
 builder.Services.AddAgents();
 builder.Services.AddWorkflow();
 builder.Services.AddScriptRunner();
@@ -25,26 +20,7 @@ var workflowFactory = scope.ServiceProvider.GetRequiredService<IWorkflowFactory>
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
 var workflow = workflowFactory.Create();
-
 var input = "What is the result of 10+10+10+10+10";
-
-var stopwatch = Stopwatch.StartNew();
 var run = await InProcessExecution.RunAsync(workflow, input);
-stopwatch.Stop();
 
-Console.WriteLine();
-foreach (var evt in run.NewEvents)
-{
-    if (evt is ExecutorCompletedEvent completed)
-    {
-        if (completed.Data is Presentation presentation)
-        {
-            Console.WriteLine();
-            Console.WriteLine("Result:");
-            Console.WriteLine($"  {presentation.Summary}");
-            Console.WriteLine($"  {presentation.FormattedResult}");
-        }
-    }
-}
-
-logger.LogInformation("Workflow completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+Console.ReadLine();

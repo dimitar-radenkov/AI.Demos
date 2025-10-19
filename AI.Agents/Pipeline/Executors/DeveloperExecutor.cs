@@ -31,7 +31,8 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        this.logger.LogInformation("Generating code for task: {Task}", message.Task);
+        this.logger.LogInformation("Starting code generation");
+        this.logger.LogInformation("  Input: Task=\"{Task}\"", message.Task);
 
         var developerPrompt = message.FromRequirements();
         await context.QueueStateUpdateAsync("developerPrompt", developerPrompt, cancellationToken);
@@ -48,8 +49,8 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
             throw new InvalidOperationException("Failed to get code artifact from developer agent.");
         }
 
-        this.logger.LogInformation("Code generated in {ElapsedSeconds:F1}s ({CodeLength} characters)",
-            stopwatch.Elapsed.TotalSeconds, result.Data.Code.Length);
+        this.logger.LogInformation("Code generation completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+        this.logger.LogInformation("  Output: Generated {CodeLength} characters of code", result.Data.Code.Length);
 
         return result.Data;
     }
@@ -59,18 +60,24 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        this.logger.LogInformation("Regenerating code based on disapproval feedback");
+        this.logger.LogWarning("FEEDBACK LOOP: Code review disapproved - regenerating code");
+        this.logger.LogInformation("  Input: Reviewer feedback=\"{Feedback}\"", message.Feedback);
 
+        var stopwatch = Stopwatch.StartNew();
         var prompt = message.FromDisapprovedMessage(context);
         var result = await this.developerAgent.ExecuteAsync(
             prompt.Result,
             cancellationToken: cancellationToken);
+        stopwatch.Stop();
 
         if (!result.IsSuccess || result.Data is null)
         {
             this.logger.LogError("Failed to get code artifact from developer agent");
             throw new InvalidOperationException("Failed to get code artifact from developer agent.");
         }
+
+        this.logger.LogInformation("Code regeneration completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+        this.logger.LogInformation("  Output: Generated {CodeLength} characters of revised code", result.Data.Code.Length);
 
         return result.Data!;
     }
@@ -80,17 +87,24 @@ public sealed class DeveloperExecutor : ReflectingExecutor<DeveloperExecutor>,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        this.logger.LogInformation("Regenerating code based on execution error feedback");
+        this.logger.LogWarning("FEEDBACK LOOP: Code execution failed - regenerating code");
+        this.logger.LogInformation("  Input: Execution error=\"{ErrorMessage}\"", message.Result.ErrorMessage ?? "Unknown error");
+
+        var stopwatch = Stopwatch.StartNew();
         var prompt = message.FromCodeExecutionErrorMessage(context);
         var result = await this.developerAgent.ExecuteAsync(
             prompt.Result,
             cancellationToken: cancellationToken);
+        stopwatch.Stop();
 
         if (!result.IsSuccess || result.Data is null)
         {
             this.logger.LogError("Failed to get code artifact from developer agent");
             throw new InvalidOperationException("Failed to get code artifact from developer agent.");
         }
+
+        this.logger.LogInformation("Code regeneration completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+        this.logger.LogInformation("  Output: Generated {CodeLength} characters of fixed code", result.Data.Code.Length);
 
         return result.Data!;
     }

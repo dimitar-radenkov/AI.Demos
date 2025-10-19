@@ -30,6 +30,7 @@ public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
         CancellationToken cancellationToken = default)
     {
         this.logger.LogInformation("Starting code review");
+        this.logger.LogInformation("  Input: Reviewing {Code} code", message.Code);
 
         var reviewPrompt = message.ToReviewPrompt();
 
@@ -44,6 +45,11 @@ public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
             this.logger.LogError("Failed to get code review from reviewer agent");
             throw new InvalidOperationException("Failed to get code review from reviewer agent.");
         }
+
+        this.logger.LogInformation("Code review completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+        this.logger.LogInformation("  Output:");
+        this.logger.LogInformation("    Decision: {Decision}", agentResult.Data!.IsApproved ? "APPROVED" : "DISAPPROVED");
+        this.logger.LogInformation("    Comments: {Comments}", agentResult.Data.Comments);
 
         return new ReviewArtifact
         {

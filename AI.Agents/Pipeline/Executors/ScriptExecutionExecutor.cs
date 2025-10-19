@@ -27,7 +27,8 @@ public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecution
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        this.logger.LogInformation("Executing C# script ('''{Code}''')", message.Code);
+        this.logger.LogInformation("Starting script execution");
+        this.logger.LogInformation("  Input: Executing {CodeLength} characters of approved code", message.Code.Length);
 
         var stopwatch = Stopwatch.StartNew();
         var executionResult = await this.scriptRunner.ExecuteAsync(
@@ -37,13 +38,17 @@ public sealed class ScriptExecutionExecutor : ReflectingExecutor<ScriptExecution
 
         if (executionResult.IsSuccess)
         {
-            this.logger.LogInformation("Execution completed in {ElapsedSeconds:F1}s - Result: {Result}",
-                stopwatch.Elapsed.TotalSeconds, executionResult.Data);
+            this.logger.LogInformation("Script execution completed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+            this.logger.LogInformation("  Output:");
+            this.logger.LogInformation("    Status: SUCCESS");
+            this.logger.LogInformation("    Result: {Result}", executionResult.Data);
         }
         else
         {
-            this.logger.LogError("Execution failed in {ElapsedSeconds:F1}s - Error: {ErrorMessage}",
-                stopwatch.Elapsed.TotalSeconds, executionResult.ErrorMessage);
+            this.logger.LogError("Script execution failed in {ElapsedSeconds:F1}s", stopwatch.Elapsed.TotalSeconds);
+            this.logger.LogError("  Output:");
+            this.logger.LogError("    Status: FAILED");
+            this.logger.LogError("    Error: {ErrorMessage}", executionResult.ErrorMessage);
         }
 
         return new ExecutionArtifact

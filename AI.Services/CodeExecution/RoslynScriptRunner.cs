@@ -86,10 +86,6 @@ public sealed class RoslynScriptRunner : IScriptRunner, IDisposable
 
             stopwatch.Stop();
 
-            this.logger.LogInformation(
-                "Code executed successfully in {Duration}ms",
-                stopwatch.ElapsedMilliseconds);
-
             var result = new ExecutionDto
             {
                 ReturnValue = scriptResult.ReturnValue,

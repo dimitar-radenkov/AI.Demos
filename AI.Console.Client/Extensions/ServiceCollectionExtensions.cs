@@ -6,6 +6,7 @@ using AI.Agents.QualityAssurance;
 using AI.Agents.Presentation;
 using AI.Client.Settings;
 using AI.Console.Client.Factories;
+using AI.Console.Client.Logging;
 using AI.Console.Client.Settings;
 using AI.Services.CodeExecution;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,5 +58,18 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<ILogger<RoslynScriptRunner>>()));
 
         return services;
+    }
+}
+
+public static class LoggingExtensions
+{
+    public static ILoggingBuilder AddLogging(this ILoggingBuilder builder)
+    {
+        builder.ClearProviders();
+        builder.AddConsoleFormatter<ColoredConsoleFormatter, ColoredConsoleFormatterOptions>();
+        builder.AddConsole(options => options.FormatterName = "colored");
+        builder.SetMinimumLevel(LogLevel.Information);
+
+        return builder;
     }
 }
