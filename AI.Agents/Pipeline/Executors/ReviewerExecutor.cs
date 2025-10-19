@@ -30,7 +30,7 @@ public sealed class ReviewerExecutor : ReflectingExecutor<ReviewerExecutor>,
         CancellationToken cancellationToken = default)
     {
         this.logger.LogInformation("Starting code review");
-        this.logger.LogInformation("  Input: Reviewing {Code} code", message.Code);
+        this.logger.LogInformation("  Input: Reviewing\n\n {Code}", message.Code);
 
         var reviewPrompt = message.ToReviewPrompt();
 
